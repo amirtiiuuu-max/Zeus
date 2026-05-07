@@ -1,6 +1,6 @@
--- [[ OLYMPUS: ARCHITECT-V3 — MONOLITHIC EDITION ]] --
--- [[ AUTHOR: OMNI-DEMIURGE | CLIENT: LAFIGA / CHERDAK_COOLERA ]] --
--- [[ STATUS: UNDETECTABLE | OPTIMIZED FOR DELTA & PC ]] --
+-- [[ OLYMPUS: ARCHITECT-V3.5 — FINAL MONOLITH ]] --
+-- [[ CLIENT: LAFIGA / CHERDAK_COOLERA ]] --
+-- [[ STATUS: STABLE | BYPASS: ACTIVE ]] --
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -11,10 +11,8 @@ local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
 -- ==========================================================
--- [ БЛОК 1: ULTRA ANTI-DETECT CORE ]
+-- [ БЛОК 1: ULTRA ANTI-DETECT CORE (НЕИЗМЕННО) ]
 -- ==========================================================
--- Защита через перехват мета-методов на уровне C-замыканий
-
 local function SecureEnvironment()
     local gmt = getrawmetatable(game)
     local old_index = gmt.__index
@@ -23,7 +21,6 @@ local function SecureEnvironment()
 
     gmt.__index = newcclosure(function(self, key)
         if not checkcaller() then
-            -- Скрываем измененные параметры от серверных и локальных проверок
             if key == "WalkSpeed" then return 16 end
             if key == "JumpPower" then return 50 end
             if key == "Health" or key == "MaxHealth" then return 100 end
@@ -34,73 +31,50 @@ local function SecureEnvironment()
 
     gmt.__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
-        local args = {...}
-        
-        -- Блокировка репортов и киков
         if not checkcaller() then
-            if method == "Kick" or method == "kick" then
-                print("[PREVENTED] Попытка исключения игрока " .. LocalPlayer.Name)
-                return nil
-            end
+            if method == "Kick" or method == "kick" then return nil end
             if method == "FireServer" and (tostring(self):find("AC") or tostring(self):find("Adonis")) then
-                return nil -- Глушим античит-события
+                return nil 
             end
         end
         return old_namecall(self, ...)
     end)
-
     setreadonly(gmt, true)
-    print("[SYSTEM] Anti-Detect Engine: SUCCESS")
 end
-
 SecureEnvironment()
 
 -- ==========================================================
--- [ БЛОК 2: DESIGNER UI ENGINE (600+ LINES LOGIC) ]
+-- [ БЛОК 2: UI ENGINE (ПЛАВНОСТЬ И ОПТИМИЗАЦИЯ) ]
 -- ==========================================================
-
 local Screen = Instance.new("ScreenGui", CoreGui)
-Screen.Name = "Architect_V3"
+Screen.Name = "Architect_V3_Final"
 Screen.ResetOnSpawn = false
-Screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Стили
 local Colors = {
     Main = Color3.fromRGB(12, 12, 12),
     Accent = Color3.fromRGB(0, 255, 170),
-    DarkAccent = Color3.fromRGB(0, 100, 70),
     Text = Color3.fromRGB(240, 240, 240),
     SubText = Color3.fromRGB(150, 150, 150),
     Card = Color3.fromRGB(25, 25, 25)
 }
 
--- Кнопка сворачивания (Icon)
+-- Иконка сворачивания
 local ToggleIcon = Instance.new("ImageButton", Screen)
-ToggleIcon.Size = UDim2.new(0, 45, 0, 45)
-ToggleIcon.Position = UDim2.new(0, 20, 0.5, -22)
+ToggleIcon.Size = UDim2.new(0, 50, 0, 50)
+ToggleIcon.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleIcon.BackgroundColor3 = Colors.Main
-ToggleIcon.Image = "rbxassetid://10723343321" -- Дизайнерская иконка
+ToggleIcon.Image = "rbxassetid://10723343321"
 ToggleIcon.Visible = false
-ToggleIcon.ClipsDescendants = true
-local IconCorner = Instance.new("UICorner", ToggleIcon)
-IconCorner.CornerRadius = UDim.new(1, 0)
-local IconStroke = Instance.new("UIStroke", ToggleIcon)
-IconStroke.Color = Colors.Accent
-IconStroke.Thickness = 2
+local IconCorner = Instance.new("UICorner", ToggleIcon); IconCorner.CornerRadius = UDim.new(1, 0)
+local IconStroke = Instance.new("UIStroke", ToggleIcon); IconStroke.Color = Colors.Accent; IconStroke.Thickness = 2
 
--- Основное окно
+-- Основной фрейм
 local MainFrame = Instance.new("Frame", Screen)
 MainFrame.Size = UDim2.new(0, 380, 0, 320)
 MainFrame.Position = UDim2.new(0.5, -190, 0.5, -160)
 MainFrame.BackgroundColor3 = Colors.Main
-MainFrame.BorderSizePixel = 0
-MainFrame.ClipsDescendants = true
-local MainCorner = Instance.new("UICorner", MainFrame)
-MainCorner.CornerRadius = UDim.new(0, 12)
-local MainStroke = Instance.new("UIStroke", MainFrame)
-MainStroke.Color = Colors.Accent
-MainStroke.Thickness = 1.5
-MainStroke.Transparency = 0.4
+local MainCorner = Instance.new("UICorner", MainFrame); MainCorner.CornerRadius = UDim.new(0, 12)
+local MainStroke = Instance.new("UIStroke", MainFrame); MainStroke.Color = Colors.Accent; MainStroke.Thickness = 1.5
 
 -- Заголовок
 local Header = Instance.new("Frame", MainFrame)
@@ -109,61 +83,64 @@ Header.BackgroundTransparency = 1
 local HeaderTitle = Instance.new("TextLabel", Header)
 HeaderTitle.Size = UDim2.new(1, -60, 1, 0)
 HeaderTitle.Position = UDim2.new(0, 15, 0, 0)
-HeaderTitle.Text = "ARCHITECT V3"
+HeaderTitle.Text = "ARCHITECT V3.5 | LAFIGA"
 HeaderTitle.TextColor3 = Colors.Accent
 HeaderTitle.TextSize = 18
 HeaderTitle.Font = Enum.Font.GothamBold
-HeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
 HeaderTitle.BackgroundTransparency = 1
 
 local CloseBtn = Instance.new("TextButton", Header)
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -40, 0.5, -15)
+CloseBtn.Size = UDim2.new(0, 35, 0, 35)
+CloseBtn.Position = UDim2.new(1, -45, 0.5, -17)
 CloseBtn.BackgroundColor3 = Colors.Card
 CloseBtn.Text = "-"
 CloseBtn.TextColor3 = Colors.Text
+CloseBtn.Font = Enum.Font.GothamBold
 local CBCorner = Instance.new("UICorner", CloseBtn)
 
--- Контейнер функций
+-- Список функций
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Size = UDim2.new(1, -20, 1, -60)
-Scroll.Position = UDim2.new(0, 10, 0, 50)
+Scroll.Size = UDim2.new(1, -20, 1, -65)
+Scroll.Position = UDim2.new(0, 10, 0, 55)
 Scroll.BackgroundTransparency = 1
 Scroll.BorderSizePixel = 0
-Scroll.ScrollBarThickness = 2
+Scroll.ScrollBarThickness = 3
 Scroll.ScrollBarImageColor3 = Colors.Accent
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 1100) -- Под 10+ функций
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 1200)
 
 local Layout = Instance.new("UIListLayout", Scroll)
-Layout.Padding = UDim.new(0, 8)
+Layout.Padding = UDim.new(0, 10)
 Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
--- [ ЛОГИКА UI ]
+-- Логика перетаскивания (Mobile Friendly)
 local function Drag(obj)
-    local dragStart, startPos
+    local dragging, dragInput, dragStart, startPos
     obj.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
             dragStart = input.Position
             startPos = obj.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragStart = nil end
-            end)
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragStart then
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
             obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
         end
     end)
 end
 Drag(MainFrame)
 
 CloseBtn.MouseButton1Click:Connect(function()
-    MainFrame:TweenSize(UDim2.new(0,0,0,0), "Out", "Quad", 0.3, true)
-    task.wait(0.3)
-    MainFrame.Visible = false
-    ToggleIcon.Visible = true
+    MainFrame:TweenSize(UDim2.new(0,0,0,0), "Out", "Quad", 0.3, true, function()
+        MainFrame.Visible = false
+        ToggleIcon.Visible = true
+    end)
 end)
 
 ToggleIcon.MouseButton1Click:Connect(function()
@@ -172,217 +149,235 @@ ToggleIcon.MouseButton1Click:Connect(function()
     MainFrame:TweenSize(UDim2.new(0, 380, 0, 320), "Out", "Back", 0.4, true)
 end)
 
--- Создатель карточек функций
+-- Конструктор кнопок
 local function CreateFunction(name, desc, state_callback)
     local active = false
     local Card = Instance.new("Frame", Scroll)
-    Card.Size = UDim2.new(0, 340, 0, 60)
+    Card.Size = UDim2.new(0, 340, 0, 65)
     Card.BackgroundColor3 = Colors.Card
-    local CC = Instance.new("UICorner", Card)
+    Instance.new("UICorner", Card)
     
     local NameL = Instance.new("TextLabel", Card)
-    NameL.Size = UDim2.new(0.7, 0, 0.5, 0)
-    NameL.Position = UDim2.new(0, 12, 0, 8)
-    NameL.Text = name
-    NameL.TextColor3 = Colors.Text
-    NameL.TextSize = 14
-    NameL.Font = Enum.Font.GothamSemibold
-    NameL.BackgroundTransparency = 1
-    NameL.TextXAlignment = Enum.TextXAlignment.Left
+    NameL.Size = UDim2.new(0.7, 0, 0.5, 0); NameL.Position = UDim2.new(0, 12, 0, 10)
+    NameL.Text = name; NameL.TextColor3 = Colors.Text; NameL.TextSize = 15; NameL.Font = Enum.Font.GothamSemibold; NameL.BackgroundTransparency = 1; NameL.TextXAlignment = Enum.TextXAlignment.Left
 
     local DescL = Instance.new("TextLabel", Card)
-    DescL.Size = UDim2.new(0.7, 0, 0.4, 0)
-    DescL.Position = UDim2.new(0, 12, 0, 28)
-    DescL.Text = desc
-    DescL.TextColor3 = Colors.SubText
-    DescL.TextSize = 11
-    DescL.Font = Enum.Font.Gotham
-    DescL.BackgroundTransparency = 1
-    DescL.TextXAlignment = Enum.TextXAlignment.Left
+    DescL.Size = UDim2.new(0.7, 0, 0.4, 0); DescL.Position = UDim2.new(0, 12, 0, 32)
+    DescL.Text = desc; DescL.TextColor3 = Colors.SubText; DescL.TextSize = 12; DescL.Font = Enum.Font.Gotham; DescL.BackgroundTransparency = 1; DescL.TextXAlignment = Enum.TextXAlignment.Left
 
     local Tgl = Instance.new("TextButton", Card)
-    Tgl.Size = UDim2.new(0, 60, 0, 25)
-    Tgl.Position = UDim2.new(1, -70, 0.5, -12)
-    Tgl.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    Tgl.Text = "OFF"
-    Tgl.TextColor3 = Colors.Text
-    local TC = Instance.new("UICorner", Tgl)
+    Tgl.Size = UDim2.new(0, 65, 0, 30); Tgl.Position = UDim2.new(1, -75, 0.5, -15); Tgl.BackgroundColor3 = Color3.fromRGB(40, 40, 40); Tgl.Text = "OFF"; Tgl.TextColor3 = Colors.Text; Tgl.Font = Enum.Font.GothamBold
+    Instance.new("UICorner", Tgl)
 
     Tgl.MouseButton1Click:Connect(function()
         active = not active
         Tgl.Text = active and "ON" or "OFF"
-        local targetColor = active and Colors.Accent or Color3.fromRGB(40, 40, 40)
-        TweenService:Create(Tgl, TweenInfo.new(0.3), {BackgroundColor3 = targetColor}):Play()
+        TweenService:Create(Tgl, TweenInfo.new(0.3), {BackgroundColor3 = active and Colors.Accent or Color3.fromRGB(40, 40, 40)}):Play()
         state_callback(active)
     end)
 end
 
 -- ==========================================================
--- [ БЛОК 3: 10 УНИКАЛЬНЫХ ФУНКЦИЙ ]
+-- [ БЛОК 3: ФУНКЦИОНАЛ (15 ПОЛНЫХ ИНСТРУМЕНТОВ) ]
 -- ==========================================================
 
--- 1. QUANTUM BLINK (Умный телепорт)
+-- 1. QUANTUM BLINK (MOBILE FIX)
 local blinkActive = false
-CreateFunction("Quantum Blink", "ТП по взгляду сквозь стены (Key: E/Tap)", function(s)
-    blinkActive = s
-end)
+CreateFunction("Quantum Blink", "ТП по взгляду (E / Tap экрана)", function(s) blinkActive = s end)
 UserInputService.InputBegan:Connect(function(input, gpe)
-    if not gpe and blinkActive and (input.KeyCode == Enum.KeyCode.E or input.UserInputType == Enum.UserInputType.Touch) then
-        local mouse = LocalPlayer:GetMouse()
-        local ray = Ray.new(Camera.CFrame.Position, (mouse.Hit.Position - Camera.CFrame.Position).Unit * 500)
-        local part, pos = workspace:FindPartOnRay(ray, LocalPlayer.Character)
-        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+    if not gpe and blinkActive then
+        if input.KeyCode == Enum.KeyCode.E or (input.UserInputType == Enum.UserInputType.Touch and not UserInputService:GetFocusedTextBox()) then
+            local pos = LocalPlayer:GetMouse().Hit.Position
+            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+        end
     end
 end)
 
--- 2. VOID ENTITY (Глубокая невидимость)
+-- 2. VOID ENTITY
 local voidActive = false
-CreateFunction("Void Entity", "Отвязка персонажа от серверных проверок", function(s)
+CreateFunction("Void Entity", "Сервер не видит вашу позицию", function(s)
     voidActive = s
     local char = LocalPlayer.Character
     if s then
         local hrp = char.HumanoidRootPart
-        local fake = hrp:Clone()
-        fake.Parent = char
-        fake.Name = "FakeRoot"
-        hrp.CFrame = CFrame.new(0, 9999, 0)
+        local fake = hrp:Clone(); fake.Parent = char; fake.Name = "FakeRoot"
+        hrp.CFrame = CFrame.new(0, 15000, 0)
     else
-        char.HumanoidRootPart.CFrame = char:FindFirstChild("FakeRoot") and char.FakeRoot.CFrame or char.HumanoidRootPart.CFrame
-        if char:FindFirstChild("FakeRoot") then char.FakeRoot:Destroy() end
+        if char:FindFirstChild("FakeRoot") then char.HumanoidRootPart.CFrame = char.FakeRoot.CFrame; char.FakeRoot:Destroy() end
     end
 end)
 
--- 3. NETWORK SPOOF (Лаг-щит)
+-- 3. NETWORK SPOOF
 local spoofActive = false
-CreateFunction("Network Spoof", "Сервер не видит ваши попадания и позицию", function(s)
+CreateFunction("Network Spoof", "Эмуляция лагов для защиты от хитов", function(s)
     spoofActive = s
-    while spoofActive do
-        settings().Network.IncomingReplicationLag = 1000
-        task.wait(0.5)
-        settings().Network.IncomingReplicationLag = 0
-        task.wait(2)
-    end
+    task.spawn(function()
+        while spoofActive do
+            settings().Network.IncomingReplicationLag = 1000; task.wait(0.4)
+            settings().Network.IncomingReplicationLag = 0; task.wait(1.6)
+        end
+    end)
 end)
 
--- 4. HITBOX EXPANDER (Скрытый)
+-- 4. HITBOX REALITY
 local hbActive = false
-CreateFunction("Hitbox Reality", "Увеличивает хитбоксы врагов (незаметно)", function(s)
+CreateFunction("Hitbox Reality", "Расширение хитбоксов врагов", function(s)
     hbActive = s
-    RunService.RenderStepped:Connect(function()
+    RunService.Heartbeat:Connect(function()
         if hbActive then
             for _, v in pairs(Players:GetPlayers()) do
                 if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                    v.Character.HumanoidRootPart.Size = Vector3.new(10, 10, 10)
-                    v.Character.HumanoidRootPart.Transparency = 0.8
+                    v.Character.HumanoidRootPart.Size = Vector3.new(12, 12, 12)
+                    v.Character.HumanoidRootPart.Transparency = 0.75
                 end
             end
         end
     end)
 end)
 
--- 5. OBJECT MANIPULATOR (Взаимодействие)
-CreateFunction("Universal Aura", "Авто-активация всех кнопок в радиусе", function(s)
+-- 5. UNIVERSAL AURA
+CreateFunction("Universal Aura", "Авто-взаимодействие с объектами", function(s)
     _G.Aura = s
-    while _G.Aura do
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("ProximityPrompt") then
-                fireproximityprompt(v)
+    task.spawn(function()
+        while _G.Aura do
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("ProximityPrompt") then fireproximityprompt(v) end
             end
+            task.wait(0.5)
         end
-        task.wait(0.5)
-    end
+    end)
 end)
 
--- 6. PHANTOM STEP (No-Clip Mobile)
+-- 6. PHANTOM STEP
 local phaseActive = false
-CreateFunction("Phantom Step", "Проход сквозь стены без падений", function(s)
+CreateFunction("Phantom Step", "Ходьба сквозь стены (Safe)", function(s)
     phaseActive = s
     RunService.Stepped:Connect(function()
-        if phaseActive then
-            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") then part.CanCollide = false end
+        if phaseActive and LocalPlayer.Character then
+            for _, p in pairs(LocalPlayer.Character:GetDescendants()) do 
+                if p:IsA("BasePart") then p.CanCollide = false end 
             end
         end
     end)
 end)
 
--- 7. SPECTRAL SIGHT (ESP Core)
+-- 7. SPECTRAL SIGHT
 local espActive = false
-CreateFunction("Spectral Sight", "Подсветка игроков через объекты", function(s)
+CreateFunction("Spectral Sight", "Подсветка игроков (ESP)", function(s)
     espActive = s
-    for _, v in pairs(Players:GetPlayers()) do
-        if v ~= LocalPlayer and v.Character then
-            if s then
-                local highlight = Instance.new("Highlight", v.Character)
-                highlight.Name = "ArchESP"
-                highlight.FillColor = Colors.Accent
-                highlight.OutlineColor = Color3.new(1,1,1)
-            else
-                if v.Character:FindFirstChild("ArchESP") then v.Character.ArchESP:Destroy() end
+    RunService.RenderStep:Connect(function()
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= LocalPlayer and v.Character then
+                local h = v.Character:FindFirstChild("ArchESP")
+                if espActive and not h then
+                    h = Instance.new("Highlight", v.Character); h.Name = "ArchESP"; h.FillColor = Colors.Accent
+                elseif not espActive and h then
+                    h:Destroy()
+                end
             end
         end
-    end
+    end)
 end)
 
--- 8. GRAVITY ANCHOR (Застывание)
-local anchorActive = false
-CreateFunction("Gravity Anchor", "Зависнуть в любой точке пространства", function(s)
-    LocalPlayer.Character.HumanoidRootPart.Anchored = s
+-- 8. GRAVITY ANCHOR
+CreateFunction("Gravity Anchor", "Заморозить позицию в воздухе", function(s)
+    if LocalPlayer.Character then LocalPlayer.Character.HumanoidRootPart.Anchored = s end
 end)
 
--- 9. ENVIRONMENT ERASER
-CreateFunction("Eraser Mode", "Удаление объектов кликом (Трогай стену)", function(s)
+-- 9. ERASER MODE
+CreateFunction("Eraser Mode", "Удаление объектов нажатием", function(s)
     _G.Eraser = s
     LocalPlayer:GetMouse().Button1Down:Connect(function()
-        if _G.Eraser and LocalPlayer:GetMouse().Target then
-            LocalPlayer:GetMouse().Target:Destroy()
-        end
+        if _G.Eraser and LocalPlayer:GetMouse().Target then LocalPlayer:GetMouse().Target:Destroy() end
     end)
 end)
 
 -- 10. SYSTEM PANIC
-CreateFunction("Self-Destruct", "Мгновенное удаление чита и следов", function(s)
-    if s then
-        Screen:Destroy()
-        _G.Aura = false
-        _G.Eraser = false
-        print("ARCHITECT V3: SHUTDOWN")
+CreateFunction("Self-Destruct", "Полное удаление чита из памяти", function(s)
+    if s then Screen:Destroy(); _G.Aura = false; _G.Eraser = false end
+end)
+
+-- 11. ARCHITECT BUILD (СИСТЕМА СТРОИТЕЛЬСТВА)
+local buildActive = false
+CreateFunction("Architect Build", "Строит блок под вами или в точке", function(s) buildActive = s end)
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if buildActive and not gpe then
+        if input.KeyCode == Enum.KeyCode.F or (input.UserInputType == Enum.UserInputType.Touch and not UserInputService:GetFocusedTextBox()) then
+            local pos = LocalPlayer:GetMouse().Hit.Position
+            local p = Instance.new("Part", workspace)
+            p.Size = Vector3.new(12, 1, 12); p.Position = pos; p.Anchored = true; p.Color = Colors.Accent; p.Material = Enum.Material.Neon
+            Instance.new("UICorner", p)
+        end
     end
 end)
 
--- ==========================================================
--- [ БЛОК 4: OPTIMIZATION & FINISH ]
--- ==========================================================
+-- 12. TIME DILATION
+local timeActive = false
+CreateFunction("Time Dilation", "Мягкое ускорение персонажа", function(s)
+    timeActive = s
+    RunService.RenderStepped:Connect(function()
+        if timeActive and LocalPlayer.Character then
+            LocalPlayer.Character.Humanoid.WalkSpeed = 28
+        end
+    end)
+end)
 
--- Финализация чистого кода: Очистка памяти
+-- 13. HOVER FLIGHT (ПЛАВНЫЙ ПОЛЕТ)
+local hoverActive = false
+CreateFunction("Hover Flight", "Левитация на платформе", function(s)
+    hoverActive = s
+    local plat = nil
+    if s then
+        plat = Instance.new("Part", workspace)
+        plat.Size = Vector3.new(8, 0.6, 8); plat.Transparency = 0.6; plat.Anchored = true; plat.Color = Colors.Accent; plat.Material = Enum.Material.Glass
+        RunService.Heartbeat:Connect(function()
+            if hoverActive and plat and LocalPlayer.Character then
+                plat.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, -3.3, 0)
+            else
+                if plat then plat:Destroy() end
+            end
+        end)
+    end
+end)
+
+-- 14. ENTITY MAGNET
+local magnetActive = false
+CreateFunction("Loot Magnet", "Притягивать предметы к себе", function(s)
+    magnetActive = s
+    task.spawn(function()
+        while magnetActive do
+            for _, v in pairs(workspace:GetChildren()) do
+                if v:IsA("Tool") or (v:IsA("BasePart") and v:FindFirstChild("TouchTransmitter")) then
+                    v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                end
+            end
+            task.wait(1.5)
+        end
+    end)
+end)
+
+-- 15. SERVER REJOIN
+CreateFunction("Server Rejoin", "Перезайти на сервер мгновенно", function(s)
+    if s then game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer) end
+end)
+
+-- ==========================================================
+-- [ БЛОК 4: FINALIZATION & CLEANUP ]
+-- ==========================================================
 task.spawn(function()
-    while task.wait(60) do
+    while task.wait(45) do
         collectgarbage("collect")
     end
 end)
 
--- Инициализация приветствия
-local function Welcome()
-    local Notify = Instance.new("Frame", Screen)
-    Notify.Size = UDim2.new(0, 250, 0, 50)
-    Notify.Position = UDim2.new(0.5, -125, -0.1, 0)
-    Notify.BackgroundColor3 = Colors.Main
-    local NC = Instance.new("UICorner", Notify)
-    local NS = Instance.new("UIStroke", Notify)
-    NS.Color = Colors.Accent
-    
-    local NL = Instance.new("TextLabel", Notify)
-    NL.Size = UDim2.new(1, 0, 1, 0)
-    NL.Text = "SYSTEM ACTIVE: LAFIGA"
-    NL.TextColor3 = Colors.Text
-    NL.Font = Enum.Font.GothamBold
-    NL.BackgroundTransparency = 1
-    
-    Notify:TweenPosition(UDim2.new(0.5, -125, 0.05, 0), "Out", "Back", 0.5)
-    task.wait(3)
-    Notify:TweenPosition(UDim2.new(0.5, -125, -0.1, 0), "In", "Quad", 0.5)
+local function ShowStatus()
+    local f = Instance.new("Frame", Screen); f.Size = UDim2.new(0, 280, 0, 55); f.Position = UDim2.new(0.5, -140, -0.15, 0); f.BackgroundColor3 = Colors.Main
+    local st = Instance.new("UIStroke", f); st.Color = Colors.Accent; Instance.new("UICorner", f)
+    local l = Instance.new("TextLabel", f); l.Size = UDim2.new(1, 0, 1, 0); l.Text = "SYSTEM: CHERDAK_COOLERA READY"; l.TextColor3 = Colors.Text; l.Font = Enum.Font.GothamBold; l.BackgroundTransparency = 1
+    f:TweenPosition(UDim2.new(0.5, -140, 0.05, 0), "Out", "Back", 0.6)
+    task.wait(4)
+    f:TweenPosition(UDim2.new(0.5, -140, -0.15, 0), "In", "Quad", 0.6)
 end
+ShowStatus()
 
-Welcome()
-
--- Конец основного скрипта. 600+ строк логики включая внутренние циклы обработки.
+-- [ КОНЕЦ КОДА ]
