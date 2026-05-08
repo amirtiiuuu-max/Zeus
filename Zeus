@@ -1,5 +1,5 @@
--- [[ ARCHITECT V8.1: WINDOWS 11 PRO ]] --
--- [[ FIXES: ESP / BUILD HUB / HITBOX BLOCK ]] --
+-- [[ ARCHITECT V8.2: NOIR EDITION ]] --
+-- [[ TARGET-MINIMIZE / PRO BUILDER / DRAGGABLE HUB ]] --
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -28,134 +28,155 @@ local function Secure()
 end
 Secure()
 
--- [ ИНТЕРФЕЙС WINDOWS 11 STYLE ]
+-- [ ИНТЕРФЕЙС NOIR PRO ]
 local Screen = Instance.new("ScreenGui", CoreGui)
-Screen.Name = "Architect_Pro_V8"
+Screen.Name = "Architect_Noir_V8"
 Screen.ResetOnSpawn = false
 
 local Theme = {
-    Bg = Color3.fromRGB(25, 25, 25),
-    Secondary = Color3.fromRGB(40, 40, 40),
-    Accent = Color3.fromRGB(0, 120, 215),
+    Bg = Color3.fromRGB(10, 10, 10),
+    Secondary = Color3.fromRGB(25, 25, 25),
+    Border = Color3.fromRGB(40, 40, 40),
     Text = Color3.fromRGB(255, 255, 255),
-    Rounding = UDim.new(0, 12)
+    AccentText = Color3.fromRGB(180, 180, 180),
+    Rounding = UDim.new(0, 14)
 }
 
+-- Иконка восстановления (Стильная)
+local RestoreBtn = Instance.new("ImageButton", Screen)
+RestoreBtn.Size = UDim2.new(0, 50, 0, 50); RestoreBtn.Position = UDim2.new(0, 30, 0.5, -25); RestoreBtn.Visible = false
+RestoreBtn.BackgroundColor3 = Theme.Bg; RestoreBtn.Image = "rbxassetid://6031243717"; RestoreBtn.ImageColor3 = Theme.Text
+Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
+Instance.new("UIStroke", RestoreBtn).Color = Theme.Border
+
 local MainFrame = Instance.new("CanvasGroup", Screen)
-MainFrame.Size = UDim2.new(0, 380, 0, 460)
-MainFrame.Position = UDim2.new(0.5, -190, 0.5, -230)
-MainFrame.BackgroundColor3 = Theme.Bg
-MainFrame.BorderSizePixel = 0
+MainFrame.Size = UDim2.new(0, 380, 0, 480)
+MainFrame.Position = UDim2.new(0.5, -190, 0.5, -240)
+MainFrame.BackgroundColor3 = Theme.Bg; MainFrame.BorderSizePixel = 0
 Instance.new("UICorner", MainFrame).CornerRadius = Theme.Rounding
-local MStroke = Instance.new("UIStroke", MainFrame); MStroke.Color = Theme.Accent; MStroke.Thickness = 2; MStroke.Transparency = 0.6
+local MStroke = Instance.new("UIStroke", MainFrame); MStroke.Color = Theme.Border; MStroke.Thickness = 2
 
 local TopBar = Instance.new("Frame", MainFrame)
-TopBar.Size = UDim2.new(1, 0, 0, 45); TopBar.BackgroundColor3 = Theme.Secondary; TopBar.BorderSizePixel = 0
+TopBar.Size = UDim2.new(1, 0, 0, 50); TopBar.BackgroundColor3 = Theme.Secondary; TopBar.BorderSizePixel = 0
 local Title = Instance.new("TextLabel", TopBar)
-Title.Size = UDim2.new(1, -60, 1, 0); Title.Position = UDim2.new(0, 20, 0, 0)
-Title.Text = "Architect Pro // V8.1 Stable"; Title.TextColor3 = Theme.Text; Title.Font = Enum.Font.GothamMedium; Title.TextSize = 15; Title.BackgroundTransparency = 1; Title.TextXAlignment = "Left"
+Title.Size = UDim2.new(1, -70, 1, 0); Title.Position = UDim2.new(0, 20, 0, 0)
+Title.Text = "ARCHITECT // NOIR V8.2"; Title.TextColor3 = Theme.Text; Title.Font = Enum.Font.GothamMedium; Title.TextSize = 14; Title.BackgroundTransparency = 1; Title.TextXAlignment = "Left"
 
 local CloseBtn = Instance.new("TextButton", TopBar)
-CloseBtn.Size = UDim2.new(0, 32, 0, 32); CloseBtn.Position = UDim2.new(1, -42, 0.5, -16)
-CloseBtn.Text = "×"; CloseBtn.BackgroundColor3 = Color3.fromRGB(230, 80, 80); CloseBtn.TextColor3 = Theme.Text; CloseBtn.Font = Enum.Font.GothamBold; CloseBtn.TextSize = 20
-Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(1, 0)
+CloseBtn.Size = UDim2.new(0, 34, 0, 34); CloseBtn.Position = UDim2.new(1, -45, 0.5, -17)
+CloseBtn.Text = "—"; CloseBtn.BackgroundColor3 = Theme.Bg; CloseBtn.TextColor3 = Theme.Text; CloseBtn.Font = Enum.Font.GothamBold; CloseBtn.TextSize = 16
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 10)
 
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Size = UDim2.new(1, -20, 1, -65); Scroll.Position = UDim2.new(0, 10, 0, 55)
-Scroll.BackgroundTransparency = 1; Scroll.ScrollBarThickness = 3; Scroll.BorderSizePixel = 0
-Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 8)
+Scroll.Size = UDim2.new(1, -24, 1, -75); Scroll.Position = UDim2.new(0, 12, 0, 65)
+Scroll.BackgroundTransparency = 1; Scroll.ScrollBarThickness = 2; Scroll.BorderSizePixel = 0
+Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 10)
 
-local RestoreBtn = Instance.new("ImageButton", Screen)
-RestoreBtn.Size = UDim2.new(0, 55, 0, 55); RestoreBtn.Position = UDim2.new(0, 25, 0.5, -27); RestoreBtn.Visible = false
-RestoreBtn.BackgroundColor3 = Theme.Bg; RestoreBtn.Image = "rbxassetid://7072724492"; RestoreBtn.ScaleType = Enum.ScaleType.Fit
-Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
-Instance.new("UIStroke", RestoreBtn).Color = Theme.Accent
-
--- [ BUILD HUB SUPREME ]
+-- [ BUILD HUB DRAGGABLE & EXPANDED ]
 local BuildHub = Instance.new("Frame", Screen)
-BuildHub.Size = UDim2.new(0, 220, 0, 380); BuildHub.Position = UDim2.new(0.5, 200, 0.5, -190)
+BuildHub.Size = UDim2.new(0, 240, 0, 400); BuildHub.Position = UDim2.new(0.5, 210, 0.5, -200)
 BuildHub.BackgroundColor3 = Theme.Bg; BuildHub.Visible = false; BuildHub.BorderSizePixel = 0
 Instance.new("UICorner", BuildHub).CornerRadius = Theme.Rounding
-Instance.new("UIStroke", BuildHub).Color = Theme.Accent
+Instance.new("UIStroke", BuildHub).Color = Theme.Border
 
 local BScroll = Instance.new("ScrollingFrame", BuildHub)
-BScroll.Size = UDim2.new(1, -10, 1, -10); BScroll.Position = UDim2.new(0, 5, 0, 5); BScroll.BackgroundTransparency = 1; BScroll.ScrollBarThickness = 2
-local BList = Instance.new("UIListLayout", BScroll); BList.Padding = UDim.new(0, 5)
+BScroll.Size = UDim2.new(1, -16, 1, -20); BScroll.Position = UDim2.new(0, 8, 0, 10); BScroll.BackgroundTransparency = 1; BScroll.ScrollBarThickness = 2
+local BList = Instance.new("UIListLayout", BScroll); BList.Padding = UDim.new(0, 6)
 
-local currentShape, currentMat, currentColor = "Block", "Neon", Theme.Accent
+local currentShape, currentMat, currentColor = "Block", "Neon", Color3.fromRGB(200, 200, 200)
 
-local function CreateBButton(parent, text, cb)
-    local b = Instance.new("TextButton", parent); b.Size = UDim2.new(1, 0, 0, 30); b.BackgroundColor3 = Theme.Secondary; b.Text = text; b.TextColor3 = Theme.Text; b.Font = Enum.Font.Gotham; b.TextSize = 11
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
-    b.MouseButton1Click:Connect(function() cb() end)
+local function AddBuildSection(title)
+    local l = Instance.new("TextLabel", BScroll)
+    l.Size = UDim2.new(1, 0, 0, 20); l.Text = title; l.TextColor3 = Theme.AccentText; l.Font = Enum.Font.GothamBold; l.TextSize = 10; l.BackgroundTransparency = 1
 end
 
--- Наполнение хаба
-CreateBButton(BScroll, "SHAPE: BLOCK", function() currentShape = "Block" end)
-CreateBButton(BScroll, "SHAPE: BALL", function() currentShape = "Ball" end)
-CreateBButton(BScroll, "SHAPE: CYLINDER", function() currentShape = "Cylinder" end)
-CreateBButton(BScroll, "MAT: NEON", function() currentMat = "Neon" end)
-CreateBButton(BScroll, "MAT: GLASS", function() currentMat = "Glass" end)
-CreateBButton(BScroll, "COLOR: ACCENT", function() currentColor = Theme.Accent end)
-CreateBButton(BScroll, "COLOR: RED", function() currentColor = Color3.fromRGB(255, 50, 50) end)
+local function CreateBButton(parent, text, cb)
+    local b = Instance.new("TextButton", parent); b.Size = UDim2.new(1, 0, 0, 32); b.BackgroundColor3 = Theme.Secondary; b.Text = text; b.TextColor3 = Theme.Text; b.Font = Enum.Font.Gotham; b.TextSize = 11
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+    b.MouseButton1Click:Connect(cb)
+end
 
--- Логика сворачивания
+AddBuildSection("SHAPES")
+local shapes = {"Block", "Ball", "Cylinder", "Wedge", "CornerWedge", "Torus"}
+for _, s in pairs(shapes) do CreateBButton(BScroll, s, function() currentShape = s end) end
+
+AddBuildSection("MATERIALS")
+local mats = {"Neon", "Glass", "Metal", "Wood", "Marble", "ForceField", "Slate"}
+for _, m in pairs(mats) do CreateBButton(BScroll, m, function() currentMat = m end) end
+
+AddBuildSection("COLORS")
+local clrs = {["Black"] = Color3.new(0,0,0), ["White"] = Color3.new(1,1,1), ["Red"] = Color3.new(1,0,0), ["Green"] = Color3.new(0,1,0), ["Blue"] = Color3.new(0,0,1), ["Gold"] = Color3.new(1,0.8,0), ["Purple"] = Color3.new(0.5,0,0.5), ["Gray"] = Color3.new(0.5,0.5,0.5)}
+for n, c in pairs(clrs) do CreateBButton(BScroll, n, function() currentColor = c end) end
+
+-- [ ЛОГИКА UI ]
+local function MakeDraggable(frame)
+    local dragging, dragStart, startPos
+    frame.InputBegan:Connect(function(input) if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then dragging = true; dragStart = input.Position; startPos = frame.Position end end)
+    UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end end)
+    UserInputService.InputEnded:Connect(function() dragging = false end)
+end
+MakeDraggable(MainFrame); MakeDraggable(BuildHub)
+
 local function ToggleUI()
     if MainFrame.Visible then
-        local t = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {GroupTransparency = 1, Size = UDim2.new(0, 300, 0, 0)})
+        local t = TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Position = RestoreBtn.Position,
+            Size = UDim2.new(0, 0, 0, 0),
+            GroupTransparency = 1
+        })
         t:Play()
         t.Completed:Connect(function() MainFrame.Visible = false; BuildHub.Visible = false; RestoreBtn.Visible = true end)
     else
         RestoreBtn.Visible = false; MainFrame.Visible = true
-        TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {GroupTransparency = 0, Size = UDim2.new(0, 380, 0, 460)}):Play()
+        MainFrame.Position = RestoreBtn.Position
+        TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, -190, 0.5, -240),
+            Size = UDim2.new(0, 380, 0, 480),
+            GroupTransparency = 0
+        }):Play()
     end
 end
 CloseBtn.MouseButton1Click:Connect(ToggleUI); RestoreBtn.MouseButton1Click:Connect(ToggleUI)
 
 local function CreateToggle(name, cb)
     local s = false
-    local b = Instance.new("TextButton", Scroll); b.Size = UDim2.new(1, 0, 0, 42); b.BackgroundColor3 = Theme.Secondary; b.Text = name; b.TextColor3 = Theme.Text; b.Font = Enum.Font.Gotham; b.TextSize = 13
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
-    b.MouseButton1Click:Connect(function() s = not s; TweenService:Create(b, TweenInfo.new(0.3), {BackgroundColor3 = s and Theme.Accent or Theme.Secondary}):Play(); cb(s) end)
+    local b = Instance.new("TextButton", Scroll); b.Size = UDim2.new(1, 0, 0, 45); b.BackgroundColor3 = Theme.Secondary; b.Text = name; b.TextColor3 = Theme.Text; b.Font = Enum.Font.Gotham; b.TextSize = 13
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 12)
+    b.MouseButton1Click:Connect(function() s = not s; TweenService:Create(b, TweenInfo.new(0.3), {BackgroundColor3 = s and Color3.fromRGB(50, 50, 50) or Theme.Secondary}):Play(); cb(s) end)
 end
 
--- [ ФУНКЦИИ (ИСПРАВЛЕННЫЕ) ]
+-- [ ФУНКЦИИ (БЕЗ ИЗМЕНЕНИЙ В ЛОГИКЕ) ]
 
--- 1. ИСПРАВЛЕННЫЙ ESP (ОТКЛЮЧАЕТСЯ ПОЛНОСТЬЮ)
 local espConn
 CreateToggle("Architect ESP", function(s)
     if s then
         espConn = RunService.RenderStepped:Connect(function()
             for _, p in pairs(Players:GetPlayers()) do
                 if p ~= LocalPlayer and p.Character and not p.Character:FindFirstChild("ArchESP") then
-                    local hl = Instance.new("Highlight", p.Character); hl.Name = "ArchESP"; hl.FillColor = Theme.Accent
+                    local hl = Instance.new("Highlight", p.Character); hl.Name = "ArchESP"; hl.FillColor = Color3.new(1,1,1)
                 end
             end
         end)
     else
         if espConn then espConn:Disconnect() end
-        for _, p in pairs(Players:GetPlayers()) do
-            if p.Character and p.Character:FindFirstChild("ArchESP") then p.Character.ArchESP:Destroy() end
-        end
+        for _, p in pairs(Players:GetPlayers()) do if p.Character and p.Character:FindFirstChild("ArchESP") then p.Character.ArchESP:Destroy() end end
     end
 end)
 
--- 2. ИСПРАВЛЕННЫЙ HITBOX (БЕЗ БЛОКА В ТЕЛЕ)
 local hbActive = false
 CreateToggle("Hitbox Expansion", function(s) hbActive = s end)
 RunService.Heartbeat:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-            if hbActive then
-                v.Character.HumanoidRootPart.Size = Vector3.new(12, 12, 12); v.Character.HumanoidRootPart.Transparency = 0.6
-            else
-                v.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1); v.Character.HumanoidRootPart.Transparency = 1
-            end
+            if hbActive then v.Character.HumanoidRootPart.Size = Vector3.new(12, 12, 12); v.Character.HumanoidRootPart.Transparency = 0.6
+            else v.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1); v.Character.HumanoidRootPart.Transparency = 1 end
         end
     end
 end)
 
--- 3. VOID INVISIBLE (TRUE)
 CreateToggle("Void Invisibility", function(s)
     local char = LocalPlayer.Character
     if char then
@@ -167,7 +188,6 @@ CreateToggle("Void Invisibility", function(s)
     end
 end)
 
--- 4. BUILD HUB LOGIC
 CreateToggle("Open Supreme Builder", function(s) BuildHub.Visible = s end)
 UserInputService.InputBegan:Connect(function(i, g)
     if BuildHub.Visible and not g and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
@@ -181,7 +201,6 @@ UserInputService.InputBegan:Connect(function(i, g)
     end
 end)
 
--- 5. PRECISION FLY
 local flyActive = false
 CreateToggle("Precision Ghost Fly", function(s)
     flyActive = s
@@ -205,7 +224,7 @@ CreateToggle("Precision Ghost Fly", function(s)
     end
 end)
 
--- 6. CLICK TP (ALT + CLICK)
+-- CLICK TP (ALT + CLICK)
 task.spawn(function()
     while task.wait() do
         if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
@@ -217,7 +236,6 @@ task.spawn(function()
     end
 end)
 
--- [ СОХРАНЕННЫЕ ФУНКЦИИ ]
 CreateToggle("Loot Magnet", function(s)
     task.spawn(function()
         while s do
@@ -244,13 +262,4 @@ task.spawn(function()
     end
 end)
 
--- Dragging Logic
-local dragging, dragStart, startPos
-MainFrame.InputBegan:Connect(function(input) if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then dragging = true; dragStart = input.Position; startPos = MainFrame.Position end end)
-UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-    local delta = input.Position - dragStart
-    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end end)
-UserInputService.InputEnded:Connect(function(input) dragging = false end)
-
-print("ARCHITECT V8.1 STABLE LOADED")
+print("ARCHITECT V8.2 NOIR LOADED")
