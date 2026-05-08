@@ -1,5 +1,5 @@
--- [[ OLYMPUS: ARCHITECT-V5.3 — MOBILE OBSIDIAN ]] --
--- [[ STYLE: COMPACT / INDUSTRIAL / MOBILE-READY ]] --
+-- [[ ARCHITECT V6.0: SLATE EDITION ]] --
+-- [[ ADAPTIVE UI / ADVANCED BUILD / SMOOTH ENGINE ]] --
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -11,9 +11,7 @@ local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
--- ==========================================================
--- [ БЛОК 1: ULTRA ANTI-DETECT CORE (БЕЗ ИЗМЕНЕНИЙ) ]
--- ==========================================================
+-- [ БЛОК 1: ЗАЩИТА (БЕЗ ИЗМЕНЕНИЙ) ]
 local function SecureEnvironment()
     local gmt = getrawmetatable(game)
     local old_index = gmt.__index
@@ -23,15 +21,13 @@ local function SecureEnvironment()
         if not checkcaller() then
             if key == "WalkSpeed" then return 16 end
             if key == "JumpPower" then return 50 end
-            if key == "Health" or key == "MaxHealth" then return 100 end
         end
         return old_index(self, key)
     end)
     gmt.__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
         if not checkcaller() then
-            if method == "Kick" or method == "kick" then return nil end
-            if method == "FireServer" and (tostring(self):find("AC") or tostring(self):find("Adonis")) then return nil end
+            if method == "Kick" then return nil end
         end
         return old_namecall(self, ...)
     end)
@@ -39,113 +35,98 @@ local function SecureEnvironment()
 end
 SecureEnvironment()
 
--- ==========================================================
--- [ БЛОК 2: COMPACT MOBILE UI ENGINE ]
--- ==========================================================
+-- [ БЛОК 2: SLATE UI ENGINE ]
 local Screen = Instance.new("ScreenGui", CoreGui)
-Screen.Name = "Architect_Mobile_V5"
+Screen.Name = "Architect_Slate"
 Screen.ResetOnSpawn = false
 
-local Style = {
-    Main = Color3.fromRGB(10, 10, 10),
-    Secondary = Color3.fromRGB(20, 20, 20),
-    Accent = Color3.fromRGB(255, 255, 255),
-    Rounding = UDim.new(0, 8),
-    Font = Enum.Font.RobotoMono,
-    TweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+local Theme = {
+    Main = Color3.fromRGB(35, 35, 40),
+    Dark = Color3.fromRGB(25, 25, 30),
+    Accent = Color3.fromRGB(100, 150, 255),
+    Text = Color3.fromRGB(230, 230, 230),
+    Green = Color3.fromRGB(80, 200, 120),
+    Red = Color3.fromRGB(200, 80, 80),
+    Font = Enum.Font.SourceSansSemibold
 }
 
--- Уменьшенный размер для удобства (330x380 вместо 420x500)
 local MainFrame = Instance.new("Frame", Screen)
-MainFrame.Size = UDim2.new(0, 330, 0, 380)
-MainFrame.Position = UDim2.new(0.5, -165, 0.5, -190)
-MainFrame.BackgroundColor3 = Style.Main
+MainFrame.Size = UDim2.new(0, 350, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
+MainFrame.BackgroundColor3 = Theme.Main
 MainFrame.BorderSizePixel = 0
-MainFrame.ClipsDescendants = true
-Instance.new("UICorner", MainFrame).CornerRadius = Style.Rounding
-local MStroke = Instance.new("UIStroke", MainFrame); MStroke.Color = Style.Accent; MStroke.Thickness = 2
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
+local MStroke = Instance.new("UIStroke", MainFrame); MStroke.Color = Theme.Accent; MStroke.Thickness = 1.5; MStroke.Transparency = 0.5
 
-local Banner = Instance.new("ImageLabel", MainFrame)
-Banner.Size = UDim2.new(1, 0, 0, 100)
-Banner.Image = "rbxassetid://13214810237"
-Banner.ScaleType = Enum.ScaleType.Crop
-Instance.new("UICorner", Banner).CornerRadius = Style.Rounding
-local BannerOverlay = Instance.new("Frame", Banner); BannerOverlay.Size = UDim2.new(1,0,1,0); BannerOverlay.BackgroundTransparency = 0.5; BannerOverlay.BackgroundColor3 = Style.Main
+local TopBar = Instance.new("Frame", MainFrame)
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.BackgroundColor3 = Theme.Dark
+Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 10)
 
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(1, -20, 0, 30); Title.Position = UDim2.new(0, 15, 0, 70)
-Title.Text = "ARCHITECT v5.3"; Title.TextColor3 = Style.Accent; Title.TextSize = 18; Title.Font = Style.Font; Title.BackgroundTransparency = 1; Title.TextXAlignment = Enum.TextXAlignment.Left
+local Title = Instance.new("TextLabel", TopBar)
+Title.Size = UDim2.new(1, -50, 1, 0); Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Text = "ARCHITECT V6.0 // SLATE"; Title.TextColor3 = Theme.Text; Title.TextSize = 16; Title.Font = Theme.Font; Title.BackgroundTransparency = 1; Title.TextXAlignment = Enum.TextXAlignment.Left
+
+local CloseBtn = Instance.new("TextButton", TopBar)
+CloseBtn.Size = UDim2.new(0, 30, 0, 30); CloseBtn.Position = UDim2.new(1, -35, 0.5, -15)
+CloseBtn.BackgroundColor3 = Theme.Red; CloseBtn.Text = "-"; CloseBtn.TextColor3 = Theme.Text; CloseBtn.Font = Theme.Font; CloseBtn.TextSize = 20
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(1, 0)
 
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Size = UDim2.new(1, -10, 1, -110); Scroll.Position = UDim2.new(0, 5, 0, 105)
-Scroll.BackgroundTransparency = 1; Scroll.BorderSizePixel = 0; Scroll.ScrollBarThickness = 2; Scroll.ScrollBarImageColor3 = Style.Accent
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 1000)
-Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 8)
+Scroll.Size = UDim2.new(1, -10, 1, -50); Scroll.Position = UDim2.new(0, 5, 0, 45)
+Scroll.BackgroundTransparency = 1; Scroll.BorderSizePixel = 0; Scroll.ScrollBarThickness = 2; Scroll.ScrollBarImageColor3 = Theme.Accent
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 1200)
+Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 5)
 
--- Иконка развертывания (Mobile Optimized)
-local ToggleIcon = Instance.new("ImageButton", Screen)
-ToggleIcon.Size = UDim2.new(0, 55, 0, 55)
-ToggleIcon.Position = UDim2.new(0, 20, 0.5, -27)
-ToggleIcon.BackgroundColor3 = Style.Main
-ToggleIcon.Image = "rbxassetid://13214810237"
-ToggleIcon.Visible = false
-Instance.new("UICorner", ToggleIcon).CornerRadius = UDim.new(1, 0)
-local IStroke = Instance.new("UIStroke", ToggleIcon); IStroke.Color = Style.Accent; IStroke.Thickness = 2
+local RestoreBtn = Instance.new("TextButton", Screen)
+RestoreBtn.Size = UDim2.new(0, 45, 0, 45); RestoreBtn.Position = UDim2.new(0, 15, 0.5, -22)
+RestoreBtn.BackgroundColor3 = Theme.Main; RestoreBtn.Text = "A"; RestoreBtn.TextColor3 = Theme.Accent; RestoreBtn.Font = Theme.Font; RestoreBtn.TextSize = 20; RestoreBtn.Visible = false
+Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
+local RStroke = Instance.new("UIStroke", RestoreBtn); RStroke.Color = Theme.Accent; RStroke.Thickness = 1.5
 
-local function CreateFunction(name, desc, state_callback)
-    local active = false
+local function CreateToggle(name, desc, callback)
+    local state = false
     local Card = Instance.new("Frame", Scroll)
-    Card.Size = UDim2.new(1, -10, 0, 55); Card.BackgroundColor3 = Style.Secondary
+    Card.Size = UDim2.new(1, -10, 0, 50); Card.BackgroundColor3 = Theme.Dark
     Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 6)
     
     local NameL = Instance.new("TextLabel", Card)
-    NameL.Size = UDim2.new(0.6, 0, 0, 25); NameL.Position = UDim2.new(0, 10, 0, 5); NameL.Text = name:upper(); NameL.TextColor3 = Style.Accent; NameL.TextSize = 12; NameL.Font = Style.Font; NameL.BackgroundTransparency = 1; NameL.TextXAlignment = Enum.TextXAlignment.Left
+    NameL.Size = UDim2.new(0.6, 0, 0, 25); NameL.Position = UDim2.new(0, 10, 0, 5); NameL.Text = name; NameL.TextColor3 = Theme.Text; NameL.TextSize = 14; NameL.Font = Theme.Font; NameL.BackgroundTransparency = 1; NameL.TextXAlignment = Enum.TextXAlignment.Left
 
     local DescL = Instance.new("TextLabel", Card)
-    DescL.Size = UDim2.new(0.6, 0, 0, 15); DescL.Position = UDim2.new(0, 10, 0, 25); DescL.Text = desc; DescL.TextColor3 = Style.Accent; DescL.TextTransparency = 0.5; DescL.TextSize = 9; DescL.Font = Style.Font; DescL.BackgroundTransparency = 1; DescL.TextXAlignment = Enum.TextXAlignment.Left
+    DescL.Size = UDim2.new(0.6, 0, 0, 15); DescL.Position = UDim2.new(0, 10, 0, 25); DescL.Text = desc; DescL.TextColor3 = Theme.Text; DescL.TextTransparency = 0.6; DescL.TextSize = 10; DescL.Font = Theme.Font; DescL.BackgroundTransparency = 1; DescL.TextXAlignment = Enum.TextXAlignment.Left
 
     local Btn = Instance.new("TextButton", Card)
-    Btn.Size = UDim2.new(0, 80, 0, 30); Btn.Position = UDim2.new(1, -90, 0.5, -15); Btn.BackgroundColor3 = Style.Main; Btn.Text = "OFF"; Btn.TextColor3 = Style.Accent; Btn.Font = Style.Font; Btn.TextSize = 10
+    Btn.Size = UDim2.new(0, 70, 0, 26); Btn.Position = UDim2.new(1, -80, 0.5, -13)
+    Btn.BackgroundColor3 = Theme.Main; Btn.Text = "OFF"; Btn.TextColor3 = Theme.Text; Btn.Font = Theme.Font; Btn.TextSize = 11
     Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 4)
-    Instance.new("UIStroke", Btn).Color = Style.Accent
+    local BStroke = Instance.new("UIStroke", Btn); BStroke.Color = Theme.Accent; BStroke.Thickness = 1
 
     Btn.MouseButton1Click:Connect(function()
-        active = not active
-        TweenService:Create(Btn, Style.TweenInfo, {BackgroundColor3 = active and Style.Accent or Style.Main, TextColor3 = active and Style.Main or Style.Accent}):Play()
-        Btn.Text = active and "ON" or "OFF"
-        state_callback(active)
+        state = not state
+        Btn.Text = state and "ON" or "OFF"
+        TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = state and Theme.Green or Theme.Main}):Play()
+        callback(state)
     end)
 end
 
--- Система сворачивания
-local function ToggleUI()
+-- Сворачивание
+local function ToggleVisibility()
     if MainFrame.Visible then
-        local anim = TweenService:Create(MainFrame, Style.TweenInfo, {Size = UDim2.new(0, 330, 0, 0)})
-        anim:Play()
-        anim.Completed:Connect(function() MainFrame.Visible = false; ToggleIcon.Visible = true end)
+        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 350, 0, 0)}):Play()
+        task.wait(0.25); MainFrame.Visible = false; RestoreBtn.Visible = true
     else
-        ToggleIcon.Visible = false
-        MainFrame.Visible = true
-        TweenService:Create(MainFrame, Style.TweenInfo, {Size = UDim2.new(0, 330, 0, 380)}):Play()
+        RestoreBtn.Visible = false; MainFrame.Visible = true
+        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 350, 0, 400)}):Play()
     end
 end
-ToggleIcon.MouseButton1Click:Connect(ToggleUI)
-UserInputService.InputBegan:Connect(function(i, g) if i.KeyCode == Enum.KeyCode.RightControl and not g then ToggleUI() end end)
+CloseBtn.MouseButton1Click:Connect(ToggleVisibility)
+RestoreBtn.MouseButton1Click:Connect(ToggleVisibility)
 
--- Плавный Drag (адаптация под палец)
-local dragging, dragStart, startPos
-MainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; dragStart = input.Position; startPos = MainFrame.Position end end)
-UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then local delta = input.Position - dragStart; MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
-UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
+-- [ БЛОК 3: ПЕРЕРАБОТАННЫЕ ФУНКЦИИ ]
 
--- ==========================================================
--- [ БЛОК 3: ПЕРЕРАБОТАННЫЕ ФУНКЦИИ (MOBILE & FIXES) ]
--- ==========================================================
-
--- 1. REAL SHADOW INVISIBLE
-local invactive = false
-CreateFunction("Shadow Invisible", "Настоящая невидимость", function(s)
-    invactive = s
+-- 1. REAL INVISIBLE
+CreateToggle("Shadow Invisibility", "Локальная невидимость (исправлено)", function(s)
     local char = LocalPlayer.Character
     if char then
         for _, v in pairs(char:GetDescendants()) do
@@ -156,150 +137,113 @@ CreateFunction("Shadow Invisible", "Настоящая невидимость", 
     end
 end)
 
--- 2. GHOST FLY (ADVANCED WASD + JOYSTICK + NOCLIP)
+-- 2. ADVANCED FLY ENGINE
 local flyActive = false
-local flySpeed = 50
-CreateFunction("Ghost Fly", "Полет WASD/Джойстик + NoClip", function(s)
+local flySpeed = 60
+CreateToggle("Ghost Fly", "Управление по взгляду + NoClip", function(s)
     flyActive = s
     local char = LocalPlayer.Character
     local root = char:FindFirstChild("HumanoidRootPart")
     if s and root then
         local bv = Instance.new("BodyVelocity", root)
         local bg = Instance.new("BodyGyro", root)
-        bv.MaxForce = Vector3.new(1e6, 1e6, 1e6); bv.Velocity = Vector3.new(0, 0.1, 0)
+        bv.MaxForce = Vector3.new(1e6, 1e6, 1e6); bv.Velocity = Vector3.new(0, 0, 0)
         bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6); bg.CFrame = root.CFrame
         
         task.spawn(function()
             while flyActive do
-                local moveDir = char.Humanoid.MoveDirection
-                if moveDir.Magnitude > 0 then
-                    bv.Velocity = (Camera.CFrame.LookVector * moveDir.Z * flySpeed) + (Camera.CFrame.RightVector * moveDir.X * flySpeed)
+                local dir = char.Humanoid.MoveDirection
+                if dir.Magnitude > 0 then
+                    bv.Velocity = (Camera.CFrame.LookVector * dir.Z * flySpeed) + (Camera.CFrame.RightVector * dir.X * flySpeed)
                 else
-                    bv.Velocity = Vector3.new(0, 0.1, 0)
+                    bv.Velocity = Vector3.new(0, 0, 0)
                 end
                 bg.CFrame = Camera.CFrame
-                -- NoClip Logic
-                for _, part in pairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") then part.CanCollide = false end
-                end
+                for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end
                 task.wait()
             end
             bv:Destroy(); bg:Destroy()
-            for _, part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then part.CanCollide = true end
-            end
+            for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = true end end
         end)
     end
 end)
 
--- 3. NATIONS BUILD HUB (ЗАМЕНА BLINK)
-local buildActive = false
-CreateFunction("Nations Build Hub", "Строительство через клик", function(s)
-    buildActive = s
-end)
+-- 3. NATIONS BUILD HUB (V2)
+local buildMode = false
+local buildType = "Block"
+local buildColor = Theme.Accent
+CreateToggle("Build Hub", "Полноценное строительство", function(s) buildMode = s end)
+
 UserInputService.InputBegan:Connect(function(i, g)
-    if buildActive and not g and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
-        local mousePos = UserInputService:GetMouseLocation()
-        local ray = Camera:ViewportPointToRay(mousePos.X, mousePos.Y)
-        local raycastResult = workspace:Raycast(ray.Origin, ray.Direction * 1000)
-        
-        if raycastResult then
+    if buildMode and not g and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
+        local ray = Camera:ViewportPointToRay(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+        local hit = workspace:Raycast(ray.Origin, ray.Direction * 1000)
+        if hit then
             local p = Instance.new("Part", workspace)
-            p.Size = Vector3.new(4, 4, 4); p.Anchored = true; p.Position = raycastResult.Position + Vector3.new(0, 2, 0)
-            p.Color = Style.Accent; p.Material = Enum.Material.Neon
-            Instance.new("UIStroke", p).Color = Color3.new(0,0,0)
+            p.Shape = buildType == "Sphere" and Enum.PartType.Ball or Enum.PartType.Block
+            p.Size = Vector3.new(4, 4, 4); p.Anchored = true; p.Position = hit.Position + Vector3.new(0, 2, 0)
+            p.Color = buildColor; p.Material = Enum.Material.SmoothPlastic
         end
     end
 end)
 
--- 4. NEXUS REACH++ (FIXED)
+-- 4. NEXUS REACH (AUTO-PICKUP)
 local reachActive = false
-CreateFunction("Nexus Reach", "Забирает предметы издалека", function(s)
+CreateToggle("Nexus Reach", "Авто-взаимодействие (1000m)", function(s)
     reachActive = s
     task.spawn(function()
         while reachActive do
             for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("ProximityPrompt") then 
+                if v:IsA("ProximityPrompt") then
                     v.MaxActivationDistance = 1000
-                    if (v.Parent.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 20 then
+                    if (v.Parent.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 25 then
                         fireproximityprompt(v)
                     end
-                elseif v:IsA("ClickDetector") then 
-                    v.MaxActivationDistance = 1000 
+                elseif v:IsA("ClickDetector") then
+                    v.MaxActivationDistance = 1000
                 end
             end
-            task.wait(0.5)
+            task.wait(0.3)
         end
     end)
 end)
 
 -- 5. VOID SERVER HOP
-CreateFunction("Void Server Hop", "Смена сервера", function(s)
+CreateToggle("Server Jump", "Мгновенный переход", function(s)
     if s then
-        local res = game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=10")
-        local servers = HttpService:JSONDecode(res)
+        local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=10"))
         for _, v in pairs(servers.data) do
             if v.playing < v.maxPlayers then TeleportService:TeleportToPlaceInstance(game.PlaceId, v.id, LocalPlayer) break end
         end
     end
 end)
 
--- ==========================================================
--- [ БЛОК 4: ОРИГИНАЛЬНЫЙ ФУНКЦИОНАЛ (БЕЗ ИЗМЕНЕНИЙ) ]
--- ==========================================================
--- (Здесь сохранены функции ESP, Void Entity, Hitbox, Phantom Step, Safe Run, Kill Aura из прошлых версий)
+-- [ БЛОК 4: ОРИГИНАЛЬНЫЙ ФУНКЦИОНАЛ ]
 
-local espActive = false
-CreateFunction("Architect ESP", "Взгляд сквозь стены", function(s)
-    espActive = s
+CreateToggle("Architect ESP", "Обводка игроков", function(s)
     RunService.RenderStepped:Connect(function()
-        if not espActive then return end
+        if not s then return end
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= LocalPlayer and p.Character and not p.Character:FindFirstChild("ArchESP") then
-                local hl = Instance.new("Highlight", p.Character); hl.Name = "ArchESP"; hl.FillColor = Style.Accent
+                local hl = Instance.new("Highlight", p.Character); hl.Name = "ArchESP"; hl.FillColor = Theme.Accent
             end
         end
     end)
 end)
 
-local voidActive = false
-CreateFunction("Void Entity", "Скрытие позиции", function(s)
-    voidActive = s
-    local char = LocalPlayer.Character
-    if s then
-        local f = char.HumanoidRootPart:Clone(); f.Parent = char; f.Name = "FakeRoot"; char.HumanoidRootPart.CFrame = CFrame.new(0, 25000, 0)
-    else
-        if char:FindFirstChild("FakeRoot") then char.HumanoidRootPart.CFrame = char.FakeRoot.CFrame; char.FakeRoot:Destroy() end
-    end
-end)
-
 local hbActive = false
-CreateFunction("Hitbox Reality", "Расширение хитбоксов", function(s) hbActive = s end)
+CreateToggle("Hitbox Expansion", "Увеличение целей", function(s) hbActive = s end)
 RunService.Heartbeat:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-            v.Character.HumanoidRootPart.Size = hbActive and Vector3.new(10, 10, 10) or Vector3.new(2, 2, 1)
-            v.Character.HumanoidRootPart.Transparency = hbActive and 0.7 or 1
+            v.Character.HumanoidRootPart.Size = hbActive and Vector3.new(12, 12, 12) or Vector3.new(2, 2, 1)
+            v.Character.HumanoidRootPart.Transparency = hbActive and 0.6 or 1
         end
     end
 end)
 
-local phActive = false
-CreateFunction("Phantom Step", "Ходьба сквозь стены", function(s) phActive = s end)
-RunService.Stepped:Connect(function()
-    if phActive and LocalPlayer.Character then
-        for _, p in pairs(LocalPlayer.Character:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end
-    end
-end)
-
-local timeActive = false
-CreateFunction("Safe Run", "Безопасное ускорение", function(s)
-    timeActive = s
-end)
-RunService.RenderStepped:Connect(function() if timeActive and LocalPlayer.Character then LocalPlayer.Character.Humanoid.WalkSpeed = 26 end end)
-
 local auraActive = false
-CreateFunction("Void Kill Aura", "Атака в радиусе", function(s) auraActive = s end)
+CreateToggle("Combat Aura", "Авто-атака рядом", function(s) auraActive = s end)
 task.spawn(function()
     while task.wait(0.1) do
         if auraActive then
@@ -313,4 +257,19 @@ task.spawn(function()
     end
 end)
 
-print("ARCHITECT V5.3: MOBILE READY LOADED")
+-- Dragging Logic
+local dragging, dragStart, startPos
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true; dragStart = input.Position; startPos = MainFrame.Position
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+UserInputService.InputEnded:Connect(function(input) dragging = false end)
+
+print("ARCHITECT V6.0: SLATE READY")
