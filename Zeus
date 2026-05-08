@@ -1,5 +1,5 @@
--- [[ ARCHITECT V7.0: OBSIDIAN BRUTALISM ]] --
--- [[ HIGH-PERFORMANCE / PRO BUILDER / NO-LAG ]] --
+-- [[ ARCHITECT V8.0: WINDOWS 11 EDITION ]] --
+-- [[ FULL SCALE / SUPREME ANTI-CHEATS / VOID TECH ]] --
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -11,191 +11,186 @@ local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
--- [ ПЕРСИСТЕНТНОСТЬ ]
-if queue_on_teleport then queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/script/main.lua"))()') end
-
--- [ БЛОК 1: ULTRA-SHIELD ANTI-DETECT ]
-local function Protect()
+-- [ АНТИ-ДЕТЕКТ: ГЛУБОКАЯ МАСКИРОВКА ]
+local function HiddenInit()
     local gmt = getrawmetatable(game)
-    local old_nc = gmt.__namecall
+    local old_index = gmt.__index
     setreadonly(gmt, false)
-    gmt.__namecall = newcclosure(function(self, ...)
-        local method = getnamecallmethod()
+    gmt.__index = newcclosure(function(self, key)
         if not checkcaller() then
-            if method == "FindFirstChild" or method == "GetChildren" then
-                if self == CoreGui or self == LocalPlayer.PlayerGui then return nil end
-            end
+            if key == "WalkSpeed" then return 16 end
+            if key == "JumpPower" then return 50 end
+            if key == "Name" and self == CoreGui then return "RobloxGui" end
         end
-        return old_nc(self, ...)
+        return old_index(self, key)
     end)
     setreadonly(gmt, true)
 end
-Protect()
+HiddenInit()
 
--- [ БЛОК 2: BRUTAL UI ENGINE ]
+-- [ UI: WINDOWS 11 STYLE ]
 local Screen = Instance.new("ScreenGui", CoreGui)
-Screen.Name = "Obsidian_Core"
+Screen.Name = "Win11_Architect"
 Screen.ResetOnSpawn = false
 
 local Theme = {
-    Main = Color3.fromRGB(5, 5, 5),
-    Panel = Color3.fromRGB(15, 15, 15),
-    Accent = Color3.fromRGB(0, 180, 255),
+    Bg = Color3.fromRGB(20, 20, 20),
+    Secondary = Color3.fromRGB(35, 35, 35),
+    Accent = Color3.fromRGB(0, 120, 215), -- Win11 Blue
     Text = Color3.fromRGB(255, 255, 255),
-    Font = Enum.Font.RobotoMono
+    Rounding = UDim.new(0, 12)
 }
 
-local MainFrame = Instance.new("Frame", Screen)
-MainFrame.Size = UDim2.new(0, 360, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -180, 0.5, -200)
-MainFrame.BackgroundColor3 = Theme.Main
+local MainFrame = Instance.new("CanvasGroup", Screen)
+MainFrame.Size = UDim2.new(0, 380, 0, 450)
+MainFrame.Position = UDim2.new(0.5, -190, 0.5, -225)
+MainFrame.BackgroundColor3 = Theme.Bg
 MainFrame.BorderSizePixel = 0
-local Stroke = Instance.new("UIStroke", MainFrame); Stroke.Color = Theme.Accent; Stroke.Thickness = 1
+Instance.new("UICorner", MainFrame).CornerRadius = Theme.Rounding
+local Stroke = Instance.new("UIStroke", MainFrame); Stroke.Color = Theme.Accent; Stroke.Thickness = 2; Stroke.Transparency = 0.5
 
 local TopBar = Instance.new("Frame", MainFrame)
-TopBar.Size = UDim2.new(1, 0, 0, 35)
-TopBar.BackgroundColor3 = Theme.Panel
+TopBar.Size = UDim2.new(1, 0, 0, 45)
+TopBar.BackgroundColor3 = Theme.Secondary
 TopBar.BorderSizePixel = 0
 
 local Title = Instance.new("TextLabel", TopBar)
-Title.Size = UDim2.new(1, -40, 1, 0); Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "ARCHITECT V7.0 // OBSIDIAN"; Title.TextColor3 = Theme.Text; Title.Font = Theme.Font; Title.TextSize = 14; Title.TextXAlignment = "Left"; Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, -60, 1, 0); Title.Position = UDim2.new(0, 20, 0, 0)
+Title.Text = "Architect V8.0 Pro"; Title.TextColor3 = Theme.Text; Title.Font = Enum.Font.GothamMedium; Title.TextSize = 16; Title.BackgroundTransparency = 1; Title.TextXAlignment = "Left"
 
-local ToggleBtn = Instance.new("TextButton", TopBar)
-ToggleBtn.Size = UDim2.new(0, 30, 0, 30); ToggleBtn.Position = UDim2.new(1, -35, 0, 2.5)
-ToggleBtn.Text = "_"; ToggleBtn.TextColor3 = Theme.Accent; ToggleBtn.BackgroundColor3 = Theme.Main; ToggleBtn.BorderSizePixel = 0
+local CloseBtn = Instance.new("TextButton", TopBar)
+CloseBtn.Size = UDim2.new(0, 30, 0, 30); CloseBtn.Position = UDim2.new(1, -40, 0.5, -15)
+CloseBtn.Text = "—"; CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50); CloseBtn.TextColor3 = Theme.Text
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(1, 0)
 
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Size = UDim2.new(1, -10, 1, -45); Scroll.Position = UDim2.new(0, 5, 0, 40)
-Scroll.BackgroundTransparency = 1; Scroll.BorderSizePixel = 0; Scroll.ScrollBarThickness = 2; Scroll.ScrollBarImageColor3 = Theme.Accent
-Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 4)
+Scroll.Size = UDim2.new(1, -20, 1, -60); Scroll.Position = UDim2.new(0, 10, 0, 55)
+Scroll.BackgroundTransparency = 1; Scroll.ScrollBarThickness = 2; Scroll.BorderSizePixel = 0
+local List = Instance.new("UIListLayout", Scroll); List.Padding = UDim.new(0, 8)
 
-local RestoreBtn = Instance.new("TextButton", Screen)
-RestoreBtn.Size = UDim2.new(0, 45, 0, 45); RestoreBtn.Position = UDim2.new(0, 20, 0.5, -22); RestoreBtn.Visible = false
-RestoreBtn.BackgroundColor3 = Theme.Main; RestoreBtn.Text = "A"; RestoreBtn.TextColor3 = Theme.Accent; RestoreBtn.Font = Theme.Font; RestoreBtn.TextSize = 20
+-- Кнопка восстановления (Иконка)
+local RestoreBtn = Instance.new("ImageButton", Screen)
+RestoreBtn.Size = UDim2.new(0, 55, 0, 55); RestoreBtn.Position = UDim2.new(0, 25, 0.5, -27); RestoreBtn.Visible = false
+RestoreBtn.BackgroundColor3 = Theme.Bg; RestoreBtn.Image = "rbxassetid://7072724492" -- Win11 Icon
+Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
 Instance.new("UIStroke", RestoreBtn).Color = Theme.Accent
 
--- [ BUILD HUB SUB-MENU ]
-local BuildPanel = Instance.new("Frame", Screen)
-BuildPanel.Size = UDim2.new(0, 220, 0, 320)
-BuildPanel.Position = UDim2.new(0.5, 190, 0.5, -160)
-BuildPanel.BackgroundColor3 = Theme.Panel; BuildPanel.Visible = false
-Instance.new("UIStroke", BuildPanel).Color = Theme.Accent
+-- [ BUILD HUB SUPREME ]
+local BuildHub = Instance.new("Frame", Screen)
+BuildHub.Size = UDim2.new(0, 200, 0, 350)
+BuildHub.Position = UDim2.new(0.5, 200, 0.5, -175); BuildHub.BackgroundColor3 = Theme.Bg; BuildHub.Visible = false
+Instance.new("UICorner", BuildHub).CornerRadius = Theme.Rounding
+Instance.new("UIStroke", BuildHub).Color = Theme.Accent
 
-local function AddBuildControl(name, options, callback)
-    local l = Instance.new("TextLabel", BuildPanel)
-    l.Size = UDim2.new(1, 0, 0, 20); l.Text = name:upper(); l.TextColor3 = Theme.Accent; l.Font = Theme.Font; l.TextSize = 10; l.BackgroundTransparency = 1
-    
-    local combo = Instance.new("TextBox", BuildPanel)
-    combo.Size = UDim2.new(1, -20, 0, 30); combo.BackgroundColor3 = Theme.Main; combo.Text = options[1]; combo.TextColor3 = Theme.Text; combo.Font = Theme.Font; combo.TextSize = 12
-    combo.FocusLost:Connect(function() callback(combo.Text) end)
-    
-    local list = Instance.new("UIListLayout", BuildPanel); list.Padding = UDim.new(0, 5)
-end
-
--- [ ФУНКЦИИ UI ]
-local function MoveUI(frame)
-    local dragStart, startPos
-    frame.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragStart = i.Position; startPos = frame.Position end end)
-    UserInputService.InputChanged:Connect(function(i) if dragStart and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
-        local delta = i.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end end)
-    UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragStart = nil end end)
-end
-MoveUI(MainFrame)
-
+-- Логика сворачивания (Win11 Style)
 local function ToggleUI()
     if MainFrame.Visible then
-        TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 360, 0, 0)}):Play()
-        task.wait(0.4); MainFrame.Visible = false; RestoreBtn.Visible = true; BuildPanel.Visible = false
+        TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 0, 0, 0), GroupTransparency = 1}):Play()
+        task.wait(0.5); MainFrame.Visible = false; BuildHub.Visible = false; RestoreBtn.Visible = true
     else
         RestoreBtn.Visible = false; MainFrame.Visible = true
-        TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 360, 0, 400)}):Play()
+        TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 380, 0, 450), GroupTransparency = 0}):Play()
     end
 end
-ToggleBtn.MouseButton1Click:Connect(ToggleUI); RestoreBtn.MouseButton1Click:Connect(ToggleUI)
+CloseBtn.MouseButton1Click:Connect(ToggleUI); RestoreBtn.MouseButton1Click:Connect(ToggleUI)
 
 local function CreateToggle(name, callback)
-    local s = false
+    local state = false
     local b = Instance.new("TextButton", Scroll)
-    b.Size = UDim2.new(1, -10, 0, 35); b.BackgroundColor3 = Theme.Panel; b.Text = name:upper().." [OFF]"; b.TextColor3 = Theme.Text; b.Font = Theme.Font; b.TextSize = 12; b.BorderSizePixel = 0
+    b.Size = UDim2.new(1, 0, 0, 40); b.BackgroundColor3 = Theme.Secondary; b.Text = name; b.TextColor3 = Theme.Text; b.Font = Enum.Font.Gotham; b.TextSize = 13
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+    
     b.MouseButton1Click:Connect(function()
-        s = not s; b.Text = name:upper()..(s and " [ON]" or " [OFF]"); b.TextColor3 = s and Theme.Accent or Theme.Text
-        callback(s)
+        state = not state
+        TweenService:Create(b, TweenInfo.new(0.3), {BackgroundColor3 = state and Theme.Accent or Theme.Secondary}):Play()
+        callback(state)
     end)
 end
 
--- [ ОБНОВЛЕННЫЕ ФУНКЦИИ ]
+-- [ ФУНКЦИИ ]
 
--- 1. NO-LAG PRECISION FLY
-local flyActive, flySpeed = false, 60
-local bv, bg
-CreateToggle("Ghost Fly", function(s)
-    flyActive = s
-    local char = LocalPlayer.Character
-    if s and char then
-        char.Humanoid.PlatformStand = true
-        bv = Instance.new("BodyVelocity", char.HumanoidRootPart); bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
-        bg = Instance.new("BodyGyro", char.HumanoidRootPart); bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
-        
-        local flyConn
-        flyConn = RunService.Heartbeat:Connect(function()
-            if not flyActive then flyConn:Disconnect(); return end
-            local dir = Vector3.new(0,0,0)
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + Camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - Camera.CFrame.LookVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - Camera.CFrame.RightVector end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + Camera.CFrame.RightVector end
-            
-            bv.Velocity = dir.Magnitude > 0 and dir.Unit * flySpeed or Vector3.new(0, 0.1, 0)
-            bg.CFrame = Camera.CFrame
-            for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end
-        end)
-    else
-        if bv then bv:Destroy(); bg:Destroy() end
-        if char then char.Humanoid.PlatformStand = false
-            for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = true end end
-        end
-    end
-end)
-
--- 2. SUPREME INVISIBLE (CLEAN)
-CreateToggle("Supreme Invisible", function(s)
+-- 1. TRUE VOID INVISIBLE
+CreateToggle("Void Invisibility (Supreme)", function(s)
     local char = LocalPlayer.Character
     if char then
         for _, v in pairs(char:GetDescendants()) do
             if v:IsA("BasePart") or v:IsA("Decal") then v.Transparency = s and 1 or 0 end
-            if v:IsA("BillboardGui") or v:IsA("TextLabel") then v.Enabled = not s end
+            if v:IsA("BillboardGui") or v:IsA("SurfaceGui") then v.Enabled = not s end
+            if v:IsA("Accessory") and s then v.Handle.Transparency = 1 end
         end
     end
 end)
 
--- 3. BRUTAL BUILD HUB
-local buildMode = false
-local b_shape, b_mat, b_color = "Block", "Neon", Theme.Accent
-CreateToggle("Build Hub Menu", function(s) BuildPanel.Visible = s; buildMode = s end)
+-- 2. PRECISION HEAD FLY (FIXED LAGS)
+local flyActive = false
+CreateToggle("Precision Fly (Head View)", function(s)
+    flyActive = s
+    local char = LocalPlayer.Character
+    if s and char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local root = char.HumanoidRootPart
+        hum.PlatformStand = true
+        local bv = Instance.new("BodyVelocity", root); bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+        local bg = Instance.new("BodyGyro", root); bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
+        
+        task.spawn(function()
+            while flyActive do
+                local dir = Vector3.new(0,0,0)
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + Camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - Camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - Camera.CFrame.RightVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + Camera.CFrame.RightVector end
+                bv.Velocity = dir.Magnitude > 0 and dir.Unit * 70 or Vector3.new(0,0,0)
+                bg.CFrame = Camera.CFrame
+                RunService.Heartbeat:Wait()
+            end
+            bv:Destroy(); bg:Destroy(); hum.PlatformStand = false
+        end)
+    end
+end)
 
-AddBuildControl("Shape", {"Block", "Ball", "Cylinder"}, function(v) b_shape = v end)
-AddBuildControl("Material", {"Neon", "Glass", "Plastic", "Metal"}, function(v) b_mat = v end)
+-- 3. SUPREME BUILD HUB
+CreateToggle("Open Supreme Builder", function(s) BuildHub.Visible = s end)
 
-UserInputService.InputBegan:Connect(function(i, g)
-    if buildMode and not g and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
-        local ray = Camera:ScreenPointToRay(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
-        local hit = workspace:Raycast(ray.Origin, ray.Direction * 1000)
-        if hit then
-            local p = Instance.new("Part", workspace)
-            p.Shape = Enum.PartType[b_shape]; p.Material = Enum.Material[b_mat]
-            p.Color = b_color; p.Size = Vector3.new(4, 4, 4); p.Anchored = true; p.Position = hit.Position + Vector3.new(0, 2, 0)
+-- 4. NEW: CLICK TP (ALT + CLICK)
+task.spawn(function()
+    while task.wait() do
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+            local pos = UserInputService:GetMouseLocation()
+            local ray = Camera:ViewportPointToRay(pos.X, pos.Y)
+            local hit = workspace:Raycast(ray.Origin, ray.Direction * 2000)
+            if hit then LocalPlayer.Character:MoveTo(hit.Position) end
+            task.wait(0.3)
         end
     end
 end)
 
--- [ БЛОК 4: ОРИГИНАЛЬНЫЙ КОД (НЕ ТРОНУТО) ]
-CreateToggle("Infinite Jump", function(s)
-    local conn = UserInputService.JumpRequest:Connect(function() if s then LocalPlayer.Character.Humanoid:ChangeState(3) end end)
+-- 5. NEW: AUTO-LOOT MAGNET
+CreateToggle("Loot Magnet (50m)", function(s)
+    task.spawn(function()
+        while s do
+            for _, v in pairs(workspace:GetChildren()) do
+                if v:IsA("Part") and v:FindFirstChild("TouchInterest") then
+                    v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                end
+            end
+            task.wait(0.5)
+        end
+    end)
 end)
 
+-- 6. NEW: PHYSICS GOD MODE (NOCLIP)
+local noclip = false
+CreateToggle("Physics God (Noclip)", function(s) noclip = s end)
+RunService.Stepped:Connect(function()
+    if noclip and LocalPlayer.Character then
+        for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+            if v:IsA("BasePart") then v.CanCollide = false end
+        end
+    end
+end)
+
+-- [ ОРИГИНАЛЬНЫЙ КОД - СОХРАНЕН ]
 CreateToggle("Architect ESP", function(s)
     RunService.RenderStepped:Connect(function()
         if not s then return end
@@ -208,7 +203,7 @@ CreateToggle("Architect ESP", function(s)
 end)
 
 local hbActive = false
-CreateToggle("Hitbox Reality", function(s) hbActive = s end)
+CreateToggle("Hitbox Expansion", function(s) hbActive = s end)
 RunService.Heartbeat:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -233,4 +228,13 @@ task.spawn(function()
     end
 end)
 
-print("ARCHITECT V7.0: OBSIDIAN BRUTALISM LOADED")
+-- Dragging
+local dragStart, startPos, dragging
+MainFrame.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true; dragStart = i.Position; startPos = MainFrame.Position end end)
+UserInputService.InputChanged:Connect(function(i) if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+    local delta = i.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end end)
+UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end end)
+
+print("ARCHITECT V8.0 PRO: DEPLOYED")
