@@ -1,5 +1,5 @@
--- [[ ARCHITECT V8.2: NOIR EDITION ]] --
--- [[ TARGET-MINIMIZE / PRO BUILDER / DRAGGABLE HUB ]] --
+-- [[ ARCHITECT V8.3: NOIR EDITION ]] --
+-- [[ ADDED: NOCLIP // PRESERVED: ALL OTHER FUNCTIONS ]] --
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -30,7 +30,7 @@ Secure()
 
 -- [ ИНТЕРФЕЙС NOIR PRO ]
 local Screen = Instance.new("ScreenGui", CoreGui)
-Screen.Name = "Architect_Noir_V8"
+Screen.Name = "Architect_Noir_V8_3"
 Screen.ResetOnSpawn = false
 
 local Theme = {
@@ -42,7 +42,7 @@ local Theme = {
     Rounding = UDim.new(0, 14)
 }
 
--- Иконка восстановления (Стильная)
+-- Иконка восстановления
 local RestoreBtn = Instance.new("ImageButton", Screen)
 RestoreBtn.Size = UDim2.new(0, 50, 0, 50); RestoreBtn.Position = UDim2.new(0, 30, 0.5, -25); RestoreBtn.Visible = false
 RestoreBtn.BackgroundColor3 = Theme.Bg; RestoreBtn.Image = "rbxassetid://6031243717"; RestoreBtn.ImageColor3 = Theme.Text
@@ -60,7 +60,7 @@ local TopBar = Instance.new("Frame", MainFrame)
 TopBar.Size = UDim2.new(1, 0, 0, 50); TopBar.BackgroundColor3 = Theme.Secondary; TopBar.BorderSizePixel = 0
 local Title = Instance.new("TextLabel", TopBar)
 Title.Size = UDim2.new(1, -70, 1, 0); Title.Position = UDim2.new(0, 20, 0, 0)
-Title.Text = "ARCHITECT // NOIR V8.2"; Title.TextColor3 = Theme.Text; Title.Font = Enum.Font.GothamMedium; Title.TextSize = 14; Title.BackgroundTransparency = 1; Title.TextXAlignment = "Left"
+Title.Text = "ARCHITECT // NOIR V8.3"; Title.TextColor3 = Theme.Text; Title.Font = Enum.Font.GothamMedium; Title.TextSize = 14; Title.BackgroundTransparency = 1; Title.TextXAlignment = "Left"
 
 local CloseBtn = Instance.new("TextButton", TopBar)
 CloseBtn.Size = UDim2.new(0, 34, 0, 34); CloseBtn.Position = UDim2.new(1, -45, 0.5, -17)
@@ -72,7 +72,7 @@ Scroll.Size = UDim2.new(1, -24, 1, -75); Scroll.Position = UDim2.new(0, 12, 0, 6
 Scroll.BackgroundTransparency = 1; Scroll.ScrollBarThickness = 2; Scroll.BorderSizePixel = 0
 Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 10)
 
--- [ BUILD HUB DRAGGABLE & EXPANDED ]
+-- [ BUILD HUB DRAGGABLE ]
 local BuildHub = Instance.new("Frame", Screen)
 BuildHub.Size = UDim2.new(0, 240, 0, 400); BuildHub.Position = UDim2.new(0.5, 210, 0.5, -200)
 BuildHub.BackgroundColor3 = Theme.Bg; BuildHub.Visible = false; BuildHub.BorderSizePixel = 0
@@ -85,15 +85,14 @@ local BList = Instance.new("UIListLayout", BScroll); BList.Padding = UDim.new(0,
 
 local currentShape, currentMat, currentColor = "Block", "Neon", Color3.fromRGB(200, 200, 200)
 
-local function AddBuildSection(title)
-    local l = Instance.new("TextLabel", BScroll)
-    l.Size = UDim2.new(1, 0, 0, 20); l.Text = title; l.TextColor3 = Theme.AccentText; l.Font = Enum.Font.GothamBold; l.TextSize = 10; l.BackgroundTransparency = 1
-end
-
 local function CreateBButton(parent, text, cb)
     local b = Instance.new("TextButton", parent); b.Size = UDim2.new(1, 0, 0, 32); b.BackgroundColor3 = Theme.Secondary; b.Text = text; b.TextColor3 = Theme.Text; b.Font = Enum.Font.Gotham; b.TextSize = 11
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
     b.MouseButton1Click:Connect(cb)
+end
+
+local function AddBuildSection(title)
+    local l = Instance.new("TextLabel", BScroll); l.Size = UDim2.new(1, 0, 0, 20); l.Text = title; l.TextColor3 = Theme.AccentText; l.Font = Enum.Font.GothamBold; l.TextSize = 10; l.BackgroundTransparency = 1
 end
 
 AddBuildSection("SHAPES")
@@ -105,7 +104,7 @@ local mats = {"Neon", "Glass", "Metal", "Wood", "Marble", "ForceField", "Slate"}
 for _, m in pairs(mats) do CreateBButton(BScroll, m, function() currentMat = m end) end
 
 AddBuildSection("COLORS")
-local clrs = {["Black"] = Color3.new(0,0,0), ["White"] = Color3.new(1,1,1), ["Red"] = Color3.new(1,0,0), ["Green"] = Color3.new(0,1,0), ["Blue"] = Color3.new(0,0,1), ["Gold"] = Color3.new(1,0.8,0), ["Purple"] = Color3.new(0.5,0,0.5), ["Gray"] = Color3.new(0.5,0.5,0.5)}
+local clrs = {["Black"]=Color3.new(0,0,0), ["White"]=Color3.new(1,1,1), ["Red"]=Color3.new(1,0,0), ["Green"]=Color3.new(0,1,0), ["Blue"]=Color3.new(0,0,1), ["Gold"]=Color3.new(1,0.8,0), ["Purple"]=Color3.new(0.5,0,0.5), ["Gray"]=Color3.new(0.5,0.5,0.5)}
 for n, c in pairs(clrs) do CreateBButton(BScroll, n, function() currentColor = c end) end
 
 -- [ ЛОГИКА UI ]
@@ -122,21 +121,13 @@ MakeDraggable(MainFrame); MakeDraggable(BuildHub)
 
 local function ToggleUI()
     if MainFrame.Visible then
-        local t = TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-            Position = RestoreBtn.Position,
-            Size = UDim2.new(0, 0, 0, 0),
-            GroupTransparency = 1
-        })
+        local t = TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = RestoreBtn.Position, Size = UDim2.new(0, 0, 0, 0), GroupTransparency = 1})
         t:Play()
         t.Completed:Connect(function() MainFrame.Visible = false; BuildHub.Visible = false; RestoreBtn.Visible = true end)
     else
         RestoreBtn.Visible = false; MainFrame.Visible = true
         MainFrame.Position = RestoreBtn.Position
-        TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Position = UDim2.new(0.5, -190, 0.5, -240),
-            Size = UDim2.new(0, 380, 0, 480),
-            GroupTransparency = 0
-        }):Play()
+        TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -190, 0.5, -240), Size = UDim2.new(0, 380, 0, 480), GroupTransparency = 0}):Play()
     end
 end
 CloseBtn.MouseButton1Click:Connect(ToggleUI); RestoreBtn.MouseButton1Click:Connect(ToggleUI)
@@ -148,8 +139,20 @@ local function CreateToggle(name, cb)
     b.MouseButton1Click:Connect(function() s = not s; TweenService:Create(b, TweenInfo.new(0.3), {BackgroundColor3 = s and Color3.fromRGB(50, 50, 50) or Theme.Secondary}):Play(); cb(s) end)
 end
 
--- [ ФУНКЦИИ (БЕЗ ИЗМЕНЕНИЙ В ЛОГИКЕ) ]
+-- [ ФУНКЦИИ ]
 
+-- 1. НОВАЯ ФУНКЦИЯ: NOCLIP
+local noclipActive = false
+CreateToggle("Noclip (Wall Walk)", function(s) noclipActive = s end)
+RunService.Stepped:Connect(function()
+    if noclipActive and LocalPlayer.Character then
+        for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+            if v:IsA("BasePart") then v.CanCollide = false end
+        end
+    end
+end)
+
+-- 2. ОСТАЛЬНЫЕ ФУНКЦИИ (БЕЗ ИЗМЕНЕНИЙ)
 local espConn
 CreateToggle("Architect ESP", function(s)
     if s then
@@ -224,7 +227,6 @@ CreateToggle("Precision Ghost Fly", function(s)
     end
 end)
 
--- CLICK TP (ALT + CLICK)
 task.spawn(function()
     while task.wait() do
         if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
@@ -262,4 +264,4 @@ task.spawn(function()
     end
 end)
 
-print("ARCHITECT V8.2 NOIR LOADED")
+print("ARCHITECT V8.3 NOIR: DEPLOYED")
