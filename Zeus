@@ -1,5 +1,5 @@
--- [[ ARCHITECT V6.0: SLATE EDITION ]] --
--- [[ ADAPTIVE UI / ADVANCED BUILD / SMOOTH ENGINE ]] --
+-- [[ ARCHITECT V6.1: SLATE REFINED ]] --
+-- [[ PRECISION FLIGHT / MULTI-BUILD / PRO PROTECTION ]] --
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -11,23 +11,25 @@ local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
--- [ БЛОК 1: ЗАЩИТА (БЕЗ ИЗМЕНЕНИЙ) ]
+-- [ БЛОК 1: ENHANCED ANTI-DETECT ]
 local function SecureEnvironment()
     local gmt = getrawmetatable(game)
     local old_index = gmt.__index
     local old_namecall = gmt.__namecall
     setreadonly(gmt, false)
+    
     gmt.__index = newcclosure(function(self, key)
         if not checkcaller() then
             if key == "WalkSpeed" then return 16 end
-            if key == "JumpPower" then return 50 end
+            if key == "JumpPower" or key == "JumpHeight" then return 50 end
         end
         return old_index(self, key)
     end)
+    
     gmt.__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
-        if not checkcaller() then
-            if method == "Kick" then return nil end
+        if not checkcaller() and (method == "Kick" or method == "kick" or method == "BreakJoints") then 
+            return nil 
         end
         return old_namecall(self, ...)
     end)
@@ -35,98 +37,100 @@ local function SecureEnvironment()
 end
 SecureEnvironment()
 
--- [ БЛОК 2: SLATE UI ENGINE ]
+-- [ БЛОК 2: REFINED SLATE UI ]
 local Screen = Instance.new("ScreenGui", CoreGui)
-Screen.Name = "Architect_Slate"
+Screen.Name = "Architect_Slate_Refined"
 Screen.ResetOnSpawn = false
 
 local Theme = {
-    Main = Color3.fromRGB(35, 35, 40),
-    Dark = Color3.fromRGB(25, 25, 30),
-    Accent = Color3.fromRGB(100, 150, 255),
-    Text = Color3.fromRGB(230, 230, 230),
-    Green = Color3.fromRGB(80, 200, 120),
-    Red = Color3.fromRGB(200, 80, 80),
-    Font = Enum.Font.SourceSansSemibold
+    Main = Color3.fromRGB(30, 30, 35),
+    Dark = Color3.fromRGB(20, 20, 25),
+    Accent = Color3.fromRGB(110, 160, 255),
+    Text = Color3.fromRGB(240, 240, 240),
+    Green = Color3.fromRGB(90, 210, 130),
+    Red = Color3.fromRGB(220, 90, 90),
+    Font = Enum.Font.SourceSansSemibold,
+    Tween = TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 }
 
 local MainFrame = Instance.new("Frame", Screen)
-MainFrame.Size = UDim2.new(0, 350, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
+MainFrame.Size = UDim2.new(0, 340, 0, 380)
+MainFrame.Position = UDim2.new(0.5, -170, 0.5, -190)
 MainFrame.BackgroundColor3 = Theme.Main
 MainFrame.BorderSizePixel = 0
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
-local MStroke = Instance.new("UIStroke", MainFrame); MStroke.Color = Theme.Accent; MStroke.Thickness = 1.5; MStroke.Transparency = 0.5
+MainFrame.ClipsDescendants = true
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
+local MStroke = Instance.new("UIStroke", MainFrame); MStroke.Color = Theme.Accent; MStroke.Thickness = 1.8; MStroke.Transparency = 0.4
 
 local TopBar = Instance.new("Frame", MainFrame)
-TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.Size = UDim2.new(1, 0, 0, 45)
 TopBar.BackgroundColor3 = Theme.Dark
-Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 12)
 
 local Title = Instance.new("TextLabel", TopBar)
-Title.Size = UDim2.new(1, -50, 1, 0); Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "ARCHITECT V6.0 // SLATE"; Title.TextColor3 = Theme.Text; Title.TextSize = 16; Title.Font = Theme.Font; Title.BackgroundTransparency = 1; Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Size = UDim2.new(1, -60, 1, 0); Title.Position = UDim2.new(0, 20, 0, 0)
+Title.Text = "ARCHITECT V6.1 // REFINED"; Title.TextColor3 = Theme.Text; Title.TextSize = 17; Title.Font = Theme.Font; Title.BackgroundTransparency = 1; Title.TextXAlignment = Enum.TextXAlignment.Left
 
 local CloseBtn = Instance.new("TextButton", TopBar)
-CloseBtn.Size = UDim2.new(0, 30, 0, 30); CloseBtn.Position = UDim2.new(1, -35, 0.5, -15)
-CloseBtn.BackgroundColor3 = Theme.Red; CloseBtn.Text = "-"; CloseBtn.TextColor3 = Theme.Text; CloseBtn.Font = Theme.Font; CloseBtn.TextSize = 20
+CloseBtn.Size = UDim2.new(0, 28, 0, 28); CloseBtn.Position = UDim2.new(1, -38, 0.5, -14)
+CloseBtn.BackgroundColor3 = Theme.Red; CloseBtn.Text = "×"; CloseBtn.TextColor3 = Theme.Text; CloseBtn.Font = Theme.Font; CloseBtn.TextSize = 22
 Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(1, 0)
 
 local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Size = UDim2.new(1, -10, 1, -50); Scroll.Position = UDim2.new(0, 5, 0, 45)
-Scroll.BackgroundTransparency = 1; Scroll.BorderSizePixel = 0; Scroll.ScrollBarThickness = 2; Scroll.ScrollBarImageColor3 = Theme.Accent
-Scroll.CanvasSize = UDim2.new(0, 0, 0, 1200)
-Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 5)
+Scroll.Size = UDim2.new(1, -12, 1, -55); Scroll.Position = UDim2.new(0, 6, 0, 50)
+Scroll.BackgroundTransparency = 1; Scroll.BorderSizePixel = 0; Scroll.ScrollBarThickness = 3; Scroll.ScrollBarImageColor3 = Theme.Accent
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 1100)
+Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 6)
 
 local RestoreBtn = Instance.new("TextButton", Screen)
-RestoreBtn.Size = UDim2.new(0, 45, 0, 45); RestoreBtn.Position = UDim2.new(0, 15, 0.5, -22)
-RestoreBtn.BackgroundColor3 = Theme.Main; RestoreBtn.Text = "A"; RestoreBtn.TextColor3 = Theme.Accent; RestoreBtn.Font = Theme.Font; RestoreBtn.TextSize = 20; RestoreBtn.Visible = false
+RestoreBtn.Size = UDim2.new(0, 50, 0, 50); RestoreBtn.Position = UDim2.new(0, 20, 0.5, -25)
+RestoreBtn.BackgroundColor3 = Theme.Main; RestoreBtn.Text = "ARC"; RestoreBtn.TextColor3 = Theme.Accent; RestoreBtn.Font = Theme.Font; RestoreBtn.TextSize = 18; RestoreBtn.Visible = false
 Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
-local RStroke = Instance.new("UIStroke", RestoreBtn); RStroke.Color = Theme.Accent; RStroke.Thickness = 1.5
+local RStroke = Instance.new("UIStroke", RestoreBtn); RStroke.Color = Theme.Accent; RStroke.Thickness = 2
 
 local function CreateToggle(name, desc, callback)
     local state = false
     local Card = Instance.new("Frame", Scroll)
-    Card.Size = UDim2.new(1, -10, 0, 50); Card.BackgroundColor3 = Theme.Dark
-    Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 6)
+    Card.Size = UDim2.new(1, -10, 0, 52); Card.BackgroundColor3 = Theme.Dark
+    Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 8)
     
     local NameL = Instance.new("TextLabel", Card)
-    NameL.Size = UDim2.new(0.6, 0, 0, 25); NameL.Position = UDim2.new(0, 10, 0, 5); NameL.Text = name; NameL.TextColor3 = Theme.Text; NameL.TextSize = 14; NameL.Font = Theme.Font; NameL.BackgroundTransparency = 1; NameL.TextXAlignment = Enum.TextXAlignment.Left
+    NameL.Size = UDim2.new(0.6, 0, 0, 26); NameL.Position = UDim2.new(0, 12, 0, 6); NameL.Text = name; NameL.TextColor3 = Theme.Text; NameL.TextSize = 14; NameL.Font = Theme.Font; NameL.BackgroundTransparency = 1; NameL.TextXAlignment = Enum.TextXAlignment.Left
 
     local DescL = Instance.new("TextLabel", Card)
-    DescL.Size = UDim2.new(0.6, 0, 0, 15); DescL.Position = UDim2.new(0, 10, 0, 25); DescL.Text = desc; DescL.TextColor3 = Theme.Text; DescL.TextTransparency = 0.6; DescL.TextSize = 10; DescL.Font = Theme.Font; DescL.BackgroundTransparency = 1; DescL.TextXAlignment = Enum.TextXAlignment.Left
+    DescL.Size = UDim2.new(0.6, 0, 0, 16); DescL.Position = UDim2.new(0, 12, 0, 28); DescL.Text = desc; DescL.TextColor3 = Theme.Text; DescL.TextTransparency = 0.5; DescL.TextSize = 10; DescL.Font = Theme.Font; DescL.BackgroundTransparency = 1; DescL.TextXAlignment = Enum.TextXAlignment.Left
 
     local Btn = Instance.new("TextButton", Card)
-    Btn.Size = UDim2.new(0, 70, 0, 26); Btn.Position = UDim2.new(1, -80, 0.5, -13)
+    Btn.Size = UDim2.new(0, 75, 0, 28); Btn.Position = UDim2.new(1, -85, 0.5, -14)
     Btn.BackgroundColor3 = Theme.Main; Btn.Text = "OFF"; Btn.TextColor3 = Theme.Text; Btn.Font = Theme.Font; Btn.TextSize = 11
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 4)
-    local BStroke = Instance.new("UIStroke", Btn); BStroke.Color = Theme.Accent; BStroke.Thickness = 1
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+    local BStroke = Instance.new("UIStroke", Btn); BStroke.Color = Theme.Accent; BStroke.Thickness = 1.2
 
     Btn.MouseButton1Click:Connect(function()
         state = not state
         Btn.Text = state and "ON" or "OFF"
-        TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = state and Theme.Green or Theme.Main}):Play()
+        TweenService:Create(Btn, Theme.Tween, {BackgroundColor3 = state and Theme.Green or Theme.Main}):Play()
         callback(state)
     end)
 end
 
--- Сворачивание
 local function ToggleVisibility()
     if MainFrame.Visible then
-        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 350, 0, 0)}):Play()
-        task.wait(0.25); MainFrame.Visible = false; RestoreBtn.Visible = true
+        local t = TweenService:Create(MainFrame, Theme.Tween, {Size = UDim2.new(0, 340, 0, 0)})
+        t:Play()
+        t.Completed:Connect(function() MainFrame.Visible = false; RestoreBtn.Visible = true end)
     else
         RestoreBtn.Visible = false; MainFrame.Visible = true
-        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 350, 0, 400)}):Play()
+        TweenService:Create(MainFrame, Theme.Tween, {Size = UDim2.new(0, 340, 0, 380)}):Play()
     end
 end
 CloseBtn.MouseButton1Click:Connect(ToggleVisibility)
 RestoreBtn.MouseButton1Click:Connect(ToggleVisibility)
 
--- [ БЛОК 3: ПЕРЕРАБОТАННЫЕ ФУНКЦИИ ]
+-- [ БЛОК 3: ОБНОВЛЕННЫЕ ФУНКЦИИ ]
 
 -- 1. REAL INVISIBLE
-CreateToggle("Shadow Invisibility", "Локальная невидимость (исправлено)", function(s)
+CreateToggle("Shadow Invisibility", "Полная прозрачность персонажа", function(s)
     local char = LocalPlayer.Character
     if char then
         for _, v in pairs(char:GetDescendants()) do
@@ -137,14 +141,17 @@ CreateToggle("Shadow Invisibility", "Локальная невидимость (
     end
 end)
 
--- 2. ADVANCED FLY ENGINE
+-- 2. PRECISION GHOST FLY
 local flyActive = false
-local flySpeed = 60
-CreateToggle("Ghost Fly", "Управление по взгляду + NoClip", function(s)
+local flySpeed = 55
+CreateToggle("Ghost Fly", "Полет WASD (Взгляд) + NoClip", function(s)
     flyActive = s
     local char = LocalPlayer.Character
+    local hum = char:FindFirstChildOfClass("Humanoid")
     local root = char:FindFirstChild("HumanoidRootPart")
-    if s and root then
+    
+    if s and root and hum then
+        hum.PlatformStand = true
         local bv = Instance.new("BodyVelocity", root)
         local bg = Instance.new("BodyGyro", root)
         bv.MaxForce = Vector3.new(1e6, 1e6, 1e6); bv.Velocity = Vector3.new(0, 0, 0)
@@ -152,64 +159,65 @@ CreateToggle("Ghost Fly", "Управление по взгляду + NoClip", f
         
         task.spawn(function()
             while flyActive do
-                local dir = char.Humanoid.MoveDirection
-                if dir.Magnitude > 0 then
-                    bv.Velocity = (Camera.CFrame.LookVector * dir.Z * flySpeed) + (Camera.CFrame.RightVector * dir.X * flySpeed)
+                local moveDir = hum.MoveDirection
+                local camCF = Camera.CFrame
+                
+                -- Расчет вектора относительно камеры (W=вперед, S=назад, A=влево, D=вправо)
+                local velocity = Vector3.new(0,0,0)
+                if moveDir.Magnitude > 0 then
+                    velocity = camCF.LookVector * (moveDir.Z < 0 and 1 or (moveDir.Z > 0 and -1 or 0)) +
+                               camCF.RightVector * (moveDir.X > 0 and 1 or (moveDir.X < 0 and -1 or 0))
+                    bv.Velocity = velocity.Unit * flySpeed
                 else
                     bv.Velocity = Vector3.new(0, 0, 0)
                 end
-                bg.CFrame = Camera.CFrame
+                
+                bg.CFrame = camCF
                 for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end
                 task.wait()
             end
             bv:Destroy(); bg:Destroy()
+            hum.PlatformStand = false
             for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = true end end
         end)
     end
 end)
 
--- 3. NATIONS BUILD HUB (V2)
-local buildMode = false
-local buildType = "Block"
-local buildColor = Theme.Accent
-CreateToggle("Build Hub", "Полноценное строительство", function(s) buildMode = s end)
+-- 3. BUILD HUB V3
+local buildActive = false
+local currentShape = 1 -- 1:Block, 2:Sphere, 3:Cylinder
+local shapes = {Enum.PartType.Block, Enum.PartType.Ball, Enum.PartType.Cylinder}
+
+CreateToggle("Build Hub", "Строительство (Клик) + Цикл форм", function(s) buildActive = s end)
 
 UserInputService.InputBegan:Connect(function(i, g)
-    if buildMode and not g and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
-        local ray = Camera:ViewportPointToRay(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
-        local hit = workspace:Raycast(ray.Origin, ray.Direction * 1000)
-        if hit then
-            local p = Instance.new("Part", workspace)
-            p.Shape = buildType == "Sphere" and Enum.PartType.Ball or Enum.PartType.Block
-            p.Size = Vector3.new(4, 4, 4); p.Anchored = true; p.Position = hit.Position + Vector3.new(0, 2, 0)
-            p.Color = buildColor; p.Material = Enum.Material.SmoothPlastic
+    if buildActive and not g then
+        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+            local ray = Camera:ViewportPointToRay(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+            local hit = workspace:Raycast(ray.Origin, ray.Direction * 1000)
+            if hit then
+                local p = Instance.new("Part", workspace)
+                p.Shape = shapes[currentShape]
+                p.Size = Vector3.new(4, 4, 4); p.Anchored = true; p.Position = hit.Position + Vector3.new(0, 2, 0)
+                p.Color = Theme.Accent; p.Material = Enum.Material.Neon
+            end
+        elseif i.KeyCode == Enum.KeyCode.R then -- Смена формы на R
+            currentShape = currentShape >= #shapes and 1 or currentShape + 1
         end
     end
 end)
 
--- 4. NEXUS REACH (AUTO-PICKUP)
-local reachActive = false
-CreateToggle("Nexus Reach", "Авто-взаимодействие (1000m)", function(s)
-    reachActive = s
-    task.spawn(function()
-        while reachActive do
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("ProximityPrompt") then
-                    v.MaxActivationDistance = 1000
-                    if (v.Parent.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 25 then
-                        fireproximityprompt(v)
-                    end
-                elseif v:IsA("ClickDetector") then
-                    v.MaxActivationDistance = 1000
-                end
-            end
-            task.wait(0.3)
-        end
-    end)
+-- 4. INFINITE JUMP (NEW)
+local jumpActive = false
+CreateToggle("Infinite Jump", "Бесконечные прыжки в воздухе", function(s) jumpActive = s end)
+UserInputService.JumpRequest:Connect(function()
+    if jumpActive then
+        LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+    end
 end)
 
 -- 5. VOID SERVER HOP
-CreateToggle("Server Jump", "Мгновенный переход", function(s)
+CreateToggle("Server Jump", "Переход на другой сервер", function(s)
     if s then
         local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=10"))
         for _, v in pairs(servers.data) do
@@ -218,21 +226,30 @@ CreateToggle("Server Jump", "Мгновенный переход", function(s)
     end
 end)
 
--- [ БЛОК 4: ОРИГИНАЛЬНЫЙ ФУНКЦИОНАЛ ]
+-- [ БЛОК 4: ОРИГИНАЛЬНЫЙ ФУНКЦИОНАЛ (FIXED ESP) ]
 
-CreateToggle("Architect ESP", "Обводка игроков", function(s)
-    RunService.RenderStepped:Connect(function()
-        if not s then return end
+local espActive = false
+CreateToggle("Architect ESP", "Обводка всех игроков", function(s)
+    espActive = s
+    if not s then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p.Character and p.Character:FindFirstChild("ArchESP") then p.Character.ArchESP:Destroy() end
+        end
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if espActive then
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= LocalPlayer and p.Character and not p.Character:FindFirstChild("ArchESP") then
-                local hl = Instance.new("Highlight", p.Character); hl.Name = "ArchESP"; hl.FillColor = Theme.Accent
+                local hl = Instance.new("Highlight", p.Character); hl.Name = "ArchESP"; hl.FillColor = Theme.Accent; hl.OutlineTransparency = 0.2
             end
         end
-    end)
+    end
 end)
 
 local hbActive = false
-CreateToggle("Hitbox Expansion", "Увеличение целей", function(s) hbActive = s end)
+CreateToggle("Hitbox Expansion", "Увеличение хитбоксов врагов", function(s) hbActive = s end)
 RunService.Heartbeat:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -243,7 +260,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 local auraActive = false
-CreateToggle("Combat Aura", "Авто-атака рядом", function(s) auraActive = s end)
+CreateToggle("Combat Aura", "Автоматическая атака в радиусе", function(s) auraActive = s end)
 task.spawn(function()
     while task.wait(0.1) do
         if auraActive then
@@ -272,4 +289,4 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 UserInputService.InputEnded:Connect(function(input) dragging = false end)
 
-print("ARCHITECT V6.0: SLATE READY")
+print("ARCHITECT V6.1: SLATE REFINED LOADED")
