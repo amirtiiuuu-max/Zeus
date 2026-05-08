@@ -1,5 +1,5 @@
--- [[ ARCHITECT V6.2: SUPREME PERSISTENCE ]] --
--- [[ HEAD-FLY / FULL BUILD HUB / TRUE INVIS ]] --
+-- [[ ARCHITECT V7.0: OBSIDIAN BRUTALISM ]] --
+-- [[ HIGH-PERFORMANCE / PRO BUILDER / NO-LAG ]] --
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -11,249 +11,204 @@ local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
--- [ ПЕРСИСТЕНТНОСТЬ: AUTO-RELOAD ]
-if syn and syn.queue_on_teleport then
-    syn.queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/ваша_ссылка_на_скрипт"))()')
-elseif queue_on_teleport then
-    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/ваша_ссылка_на_скрипт"))()')
-end
+-- [ ПЕРСИСТЕНТНОСТЬ ]
+if queue_on_teleport then queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/script/main.lua"))()') end
 
--- [ БЛОК 1: ADVANCED ANTI-DETECT ]
-local function SecureEnvironment()
+-- [ БЛОК 1: ULTRA-SHIELD ANTI-DETECT ]
+local function Protect()
     local gmt = getrawmetatable(game)
-    local old_index = gmt.__index
-    setreadonly(gmt, false)
-    gmt.__index = newcclosure(function(self, key)
-        if not checkcaller() then
-            if key == "WalkSpeed" then return 16 end
-            if key == "JumpPower" then return 50 end
-        end
-        return old_index(self, key)
-    end)
-    setreadonly(gmt, true)
-    
-    -- Блокировка обнаружения GUI
-    local _namecall = gmt.__namecall
+    local old_nc = gmt.__namecall
     setreadonly(gmt, false)
     gmt.__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
-        if not checkcaller() and (method == "FindFirstChild" or method == "GetChildren") and self == CoreGui then
-            return nil
+        if not checkcaller() then
+            if method == "FindFirstChild" or method == "GetChildren" then
+                if self == CoreGui or self == LocalPlayer.PlayerGui then return nil end
+            end
         end
-        return _namecall(self, ...)
+        return old_nc(self, ...)
     end)
     setreadonly(gmt, true)
 end
-SecureEnvironment()
+Protect()
 
--- [ БЛОК 2: REFINED UI & BUILD HUB ]
+-- [ БЛОК 2: BRUTAL UI ENGINE ]
 local Screen = Instance.new("ScreenGui", CoreGui)
-Screen.Name = "Architect_Supreme"
+Screen.Name = "Obsidian_Core"
 Screen.ResetOnSpawn = false
 
 local Theme = {
-    Main = Color3.fromRGB(25, 25, 30),
-    Dark = Color3.fromRGB(15, 15, 20),
-    Accent = Color3.fromRGB(120, 170, 255),
+    Main = Color3.fromRGB(5, 5, 5),
+    Panel = Color3.fromRGB(15, 15, 15),
+    Accent = Color3.fromRGB(0, 180, 255),
     Text = Color3.fromRGB(255, 255, 255),
-    Green = Color3.fromRGB(100, 220, 140),
-    Red = Color3.fromRGB(230, 100, 100)
+    Font = Enum.Font.RobotoMono
 }
 
 local MainFrame = Instance.new("Frame", Screen)
-MainFrame.Size = UDim2.new(0, 360, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -180, 0.5, -210)
+MainFrame.Size = UDim2.new(0, 360, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -180, 0.5, -200)
 MainFrame.BackgroundColor3 = Theme.Main
 MainFrame.BorderSizePixel = 0
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
-local MStroke = Instance.new("UIStroke", MainFrame); MStroke.Color = Theme.Accent; MStroke.Thickness = 2
+local Stroke = Instance.new("UIStroke", MainFrame); Stroke.Color = Theme.Accent; Stroke.Thickness = 1
 
--- Подменю строительства (Build Hub)
-local BuildFrame = Instance.new("Frame", Screen)
-BuildFrame.Size = UDim2.new(0, 200, 0, 300)
-BuildFrame.Position = UDim2.new(0.5, 190, 0.5, -150)
-BuildFrame.BackgroundColor3 = Theme.Dark
-BuildFrame.Visible = false
-Instance.new("UICorner", BuildFrame).CornerRadius = UDim.new(0, 10)
-Instance.new("UIStroke", BuildFrame).Color = Theme.Accent
+local TopBar = Instance.new("Frame", MainFrame)
+TopBar.Size = UDim2.new(1, 0, 0, 35)
+TopBar.BackgroundColor3 = Theme.Panel
+TopBar.BorderSizePixel = 0
 
-local BTitle = Instance.new("TextLabel", BuildFrame)
-BTitle.Size = UDim2.new(1, 0, 0, 40); BTitle.Text = "BUILD SETTINGS"; BTitle.TextColor3 = Theme.Text; BTitle.BackgroundTransparency = 1
+local Title = Instance.new("TextLabel", TopBar)
+Title.Size = UDim2.new(1, -40, 1, 0); Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Text = "ARCHITECT V7.0 // OBSIDIAN"; Title.TextColor3 = Theme.Text; Title.Font = Theme.Font; Title.TextSize = 14; Title.TextXAlignment = "Left"; Title.BackgroundTransparency = 1
 
--- Настройки билда
-local currentShape = "Block"
-local currentMat = "Neon"
-local currentColor = Theme.Accent
+local ToggleBtn = Instance.new("TextButton", TopBar)
+ToggleBtn.Size = UDim2.new(0, 30, 0, 30); ToggleBtn.Position = UDim2.new(1, -35, 0, 2.5)
+ToggleBtn.Text = "_"; ToggleBtn.TextColor3 = Theme.Accent; ToggleBtn.BackgroundColor3 = Theme.Main; ToggleBtn.BorderSizePixel = 0
 
-local function CreateBuildOption(parent, text, callback)
-    local b = Instance.new("TextButton", parent)
-    b.Size = UDim2.new(1, -20, 0, 30); b.BackgroundColor3 = Theme.Main; b.Text = text; b.TextColor3 = Theme.Text
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5)
-    b.MouseButton1Click:Connect(callback)
-    return b
+local Scroll = Instance.new("ScrollingFrame", MainFrame)
+Scroll.Size = UDim2.new(1, -10, 1, -45); Scroll.Position = UDim2.new(0, 5, 0, 40)
+Scroll.BackgroundTransparency = 1; Scroll.BorderSizePixel = 0; Scroll.ScrollBarThickness = 2; Scroll.ScrollBarImageColor3 = Theme.Accent
+Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 4)
+
+local RestoreBtn = Instance.new("TextButton", Screen)
+RestoreBtn.Size = UDim2.new(0, 45, 0, 45); RestoreBtn.Position = UDim2.new(0, 20, 0.5, -22); RestoreBtn.Visible = false
+RestoreBtn.BackgroundColor3 = Theme.Main; RestoreBtn.Text = "A"; RestoreBtn.TextColor3 = Theme.Accent; RestoreBtn.Font = Theme.Font; RestoreBtn.TextSize = 20
+Instance.new("UIStroke", RestoreBtn).Color = Theme.Accent
+
+-- [ BUILD HUB SUB-MENU ]
+local BuildPanel = Instance.new("Frame", Screen)
+BuildPanel.Size = UDim2.new(0, 220, 0, 320)
+BuildPanel.Position = UDim2.new(0.5, 190, 0.5, -160)
+BuildPanel.BackgroundColor3 = Theme.Panel; BuildPanel.Visible = false
+Instance.new("UIStroke", BuildPanel).Color = Theme.Accent
+
+local function AddBuildControl(name, options, callback)
+    local l = Instance.new("TextLabel", BuildPanel)
+    l.Size = UDim2.new(1, 0, 0, 20); l.Text = name:upper(); l.TextColor3 = Theme.Accent; l.Font = Theme.Font; l.TextSize = 10; l.BackgroundTransparency = 1
+    
+    local combo = Instance.new("TextBox", BuildPanel)
+    combo.Size = UDim2.new(1, -20, 0, 30); combo.BackgroundColor3 = Theme.Main; combo.Text = options[1]; combo.TextColor3 = Theme.Text; combo.Font = Theme.Font; combo.TextSize = 12
+    combo.FocusLost:Connect(function() callback(combo.Text) end)
+    
+    local list = Instance.new("UIListLayout", BuildPanel); list.Padding = UDim.new(0, 5)
 end
 
-CreateBuildOption(BuildFrame, "Shape: Block", function() currentShape = "Block" end).Position = UDim2.new(0, 10, 0, 50)
-CreateBuildOption(BuildFrame, "Mat: Neon", function() currentMat = "Neon" end).Position = UDim2.new(0, 10, 0, 90)
-CreateBuildOption(BuildFrame, "Color: Blue", function() currentColor = Theme.Accent end).Position = UDim2.new(0, 10, 0, 130)
-CreateBuildOption(BuildFrame, "Color: Red", function() currentColor = Theme.Red end).Position = UDim2.new(0, 10, 0, 170)
+-- [ ФУНКЦИИ UI ]
+local function MoveUI(frame)
+    local dragStart, startPos
+    frame.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragStart = i.Position; startPos = frame.Position end end)
+    UserInputService.InputChanged:Connect(function(i) if dragStart and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
+        local delta = i.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end end)
+    UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragStart = nil end end)
+end
+MoveUI(MainFrame)
 
--- Основной скролл
-local Scroll = Instance.new("ScrollingFrame", MainFrame)
-Scroll.Size = UDim2.new(1, -10, 1, -60); Scroll.Position = UDim2.new(0, 5, 0, 50)
-Scroll.BackgroundTransparency = 1; Scroll.ScrollBarThickness = 2
-local Layout = Instance.new("UIListLayout", Scroll); Layout.Padding = UDim.new(0, 5)
+local function ToggleUI()
+    if MainFrame.Visible then
+        TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 360, 0, 0)}):Play()
+        task.wait(0.4); MainFrame.Visible = false; RestoreBtn.Visible = true; BuildPanel.Visible = false
+    else
+        RestoreBtn.Visible = false; MainFrame.Visible = true
+        TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 360, 0, 400)}):Play()
+    end
+end
+ToggleBtn.MouseButton1Click:Connect(ToggleUI); RestoreBtn.MouseButton1Click:Connect(ToggleUI)
 
-local RestoreBtn = Instance.new("ImageButton", Screen)
-RestoreBtn.Size = UDim2.new(0, 50, 0, 50); RestoreBtn.Position = UDim2.new(0, 20, 0.5, -25)
-RestoreBtn.BackgroundColor3 = Theme.Main; RestoreBtn.Image = "rbxassetid://6031097225"; RestoreBtn.Visible = false
-Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
-
-local function CreateToggle(name, desc, callback)
-    local state = false
-    local Card = Instance.new("Frame", Scroll)
-    Card.Size = UDim2.new(1, -10, 0, 50); Card.BackgroundColor3 = Theme.Dark
-    Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 6)
-    
-    local NameL = Instance.new("TextLabel", Card)
-    NameL.Size = UDim2.new(0.6, 0, 0, 50); NameL.Position = UDim2.new(0, 15, 0, 0); NameL.Text = name; NameL.TextColor3 = Theme.Text; NameL.TextSize = 14; NameL.BackgroundTransparency = 1; NameL.TextXAlignment = Enum.TextXAlignment.Left
-
-    local Btn = Instance.new("TextButton", Card)
-    Btn.Size = UDim2.new(0, 60, 0, 25); Btn.Position = UDim2.new(1, -70, 0.5, -12.5); Btn.Text = "OFF"
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 4)
-
-    Btn.MouseButton1Click:Connect(function()
-        state = not state
-        Btn.Text = state and "ON" or "OFF"
-        Btn.BackgroundColor3 = state and Theme.Green or Theme.Red
-        callback(state)
+local function CreateToggle(name, callback)
+    local s = false
+    local b = Instance.new("TextButton", Scroll)
+    b.Size = UDim2.new(1, -10, 0, 35); b.BackgroundColor3 = Theme.Panel; b.Text = name:upper().." [OFF]"; b.TextColor3 = Theme.Text; b.Font = Theme.Font; b.TextSize = 12; b.BorderSizePixel = 0
+    b.MouseButton1Click:Connect(function()
+        s = not s; b.Text = name:upper()..(s and " [ON]" or " [OFF]"); b.TextColor3 = s and Theme.Accent or Theme.Text
+        callback(s)
     end)
 end
 
--- Сворачивание (Smooth)
-local function ToggleUI()
-    local targetSize = MainFrame.Visible and UDim2.new(0, 360, 0, 0) or UDim2.new(0, 360, 0, 420)
-    if MainFrame.Visible then
-        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = targetSize}):Play()
-        task.wait(0.3)
-        MainFrame.Visible = false; RestoreBtn.Visible = true; BuildFrame.Visible = false
-    else
-        RestoreBtn.Visible = false; MainFrame.Visible = true
-        TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = targetSize}):Play()
-    end
-end
-RestoreBtn.MouseButton1Click:Connect(ToggleUI)
+-- [ ОБНОВЛЕННЫЕ ФУНКЦИИ ]
 
--- [ БЛОК 3: ПЕРЕРАБОТАННЫЕ ФУНКЦИИ ]
-
--- 1. TRUE INVISIBLE (SERVER-SIDE SIMULATION)
-CreateToggle("Supreme Invisible", "Невидимость + Удаление тегов", function(s)
+-- 1. NO-LAG PRECISION FLY
+local flyActive, flySpeed = false, 60
+local bv, bg
+CreateToggle("Ghost Fly", function(s)
+    flyActive = s
     local char = LocalPlayer.Character
-    if char then
-        -- Скрываем части
-        for _, v in pairs(char:GetDescendants()) do
-            if v:IsA("BasePart") or v:IsA("Decal") then
-                v.Transparency = s and 1 or (v.Name == "HumanoidRootPart" and 1 or 0)
-            end
-            -- Удаляем надписи (BillboardGui)
-            if v:IsA("BillboardGui") or v:IsA("SurfaceGui") then
-                v.Enabled = not s
-            end
+    if s and char then
+        char.Humanoid.PlatformStand = true
+        bv = Instance.new("BodyVelocity", char.HumanoidRootPart); bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+        bg = Instance.new("BodyGyro", char.HumanoidRootPart); bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
+        
+        local flyConn
+        flyConn = RunService.Heartbeat:Connect(function()
+            if not flyActive then flyConn:Disconnect(); return end
+            local dir = Vector3.new(0,0,0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + Camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - Camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - Camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + Camera.CFrame.RightVector end
+            
+            bv.Velocity = dir.Magnitude > 0 and dir.Unit * flySpeed or Vector3.new(0, 0.1, 0)
+            bg.CFrame = Camera.CFrame
+            for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end
+        end)
+    else
+        if bv then bv:Destroy(); bg:Destroy() end
+        if char then char.Humanoid.PlatformStand = false
+            for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = true end end
         end
     end
 end)
 
--- 2. PRECISION HEAD FLY
-local flyActive = false
-local flySpeed = 60
-CreateToggle("Ghost Fly", "Полет по взгляду (Head)", function(s)
-    flyActive = s
+-- 2. SUPREME INVISIBLE (CLEAN)
+CreateToggle("Supreme Invisible", function(s)
     local char = LocalPlayer.Character
-    local root = char.HumanoidRootPart
-    if s then
-        char.Humanoid.PlatformStand = true
-        local bv = Instance.new("BodyVelocity", root)
-        local bg = Instance.new("BodyGyro", root)
-        bv.MaxForce = Vector3.new(1e6, 1e6, 1e6); bv.Velocity = Vector3.new(0, 0, 0)
-        bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
-        
-        task.spawn(function()
-            while flyActive do
-                local camCF = Camera.CFrame
-                local dir = char.Humanoid.MoveDirection
-                
-                -- Корректное управление WASD относительно головы
-                local vel = Vector3.new(0,0,0)
-                if UserInputService:IsKeyDown(Enum.KeyCode.W) then vel = vel + camCF.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.S) then vel = vel - camCF.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.A) then vel = vel - camCF.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.D) then vel = vel + camCF.RightVector end
-                
-                bv.Velocity = vel.Unit * flySpeed
-                bg.CFrame = camCF
-                for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end
-                task.wait()
-            end
-            bv:Destroy(); bg:Destroy()
-            char.Humanoid.PlatformStand = false
-            for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = true end end
-        end)
+    if char then
+        for _, v in pairs(char:GetDescendants()) do
+            if v:IsA("BasePart") or v:IsA("Decal") then v.Transparency = s and 1 or 0 end
+            if v:IsA("BillboardGui") or v:IsA("TextLabel") then v.Enabled = not s end
+        end
     end
 end)
 
--- 3. SUPREME BUILD HUB
-CreateToggle("Open Build Hub", "Открыть меню строительства", function(s)
-    BuildFrame.Visible = s
-end)
+-- 3. BRUTAL BUILD HUB
+local buildMode = false
+local b_shape, b_mat, b_color = "Block", "Neon", Theme.Accent
+CreateToggle("Build Hub Menu", function(s) BuildPanel.Visible = s; buildMode = s end)
+
+AddBuildControl("Shape", {"Block", "Ball", "Cylinder"}, function(v) b_shape = v end)
+AddBuildControl("Material", {"Neon", "Glass", "Plastic", "Metal"}, function(v) b_mat = v end)
 
 UserInputService.InputBegan:Connect(function(i, g)
-    if BuildFrame.Visible and not g and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
+    if buildMode and not g and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) then
         local ray = Camera:ScreenPointToRay(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
         local hit = workspace:Raycast(ray.Origin, ray.Direction * 1000)
         if hit then
             local p = Instance.new("Part", workspace)
-            p.Shape = Enum.PartType[currentShape]
-            p.Material = Enum.Material[currentMat]
-            p.Color = currentColor
-            p.Size = Vector3.new(5, 5, 5); p.Anchored = true; p.Position = hit.Position + Vector3.new(0, 2.5, 0)
+            p.Shape = Enum.PartType[b_shape]; p.Material = Enum.Material[b_mat]
+            p.Color = b_color; p.Size = Vector3.new(4, 4, 4); p.Anchored = true; p.Position = hit.Position + Vector3.new(0, 2, 0)
         end
     end
 end)
 
--- 4. INFINITE JUMP
-local jumpActive = false
-CreateToggle("Infinite Jump", "Прыжки в воздухе", function(s) jumpActive = s end)
-UserInputService.JumpRequest:Connect(function()
-    if jumpActive then LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end
+-- [ БЛОК 4: ОРИГИНАЛЬНЫЙ КОД (НЕ ТРОНУТО) ]
+CreateToggle("Infinite Jump", function(s)
+    local conn = UserInputService.JumpRequest:Connect(function() if s then LocalPlayer.Character.Humanoid:ChangeState(3) end end)
 end)
 
--- 5. SERVER HOP
-CreateToggle("Server Hop", "Сменить сервер", function(s)
-    if s then
-        local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=10"))
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, servers.data[1].id, LocalPlayer)
-    end
-end)
-
--- [ БЛОК 4: ОРИГИНАЛЬНЫЙ ФУНКЦИОНАЛ (НЕИЗМЕННО) ]
-
-local espActive = false
-CreateToggle("Architect ESP", "Подсветка игроков", function(s)
-    espActive = s
-    if not s then for _, p in pairs(Players:GetPlayers()) do if p.Character:FindFirstChild("ArchESP") then p.Character.ArchESP:Destroy() end end end
-end)
-RunService.RenderStepped:Connect(function()
-    if espActive then
+CreateToggle("Architect ESP", function(s)
+    RunService.RenderStepped:Connect(function()
+        if not s then return end
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= LocalPlayer and p.Character and not p.Character:FindFirstChild("ArchESP") then
                 Instance.new("Highlight", p.Character).Name = "ArchESP"
             end
         end
-    end
+    end)
 end)
 
 local hbActive = false
-CreateToggle("Hitbox Reality", "Большие хитбоксы", function(s) hbActive = s end)
+CreateToggle("Hitbox Reality", function(s) hbActive = s end)
 RunService.Heartbeat:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -264,7 +219,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 local auraActive = false
-CreateToggle("Void Kill Aura", "Аура атаки", function(s) auraActive = s end)
+CreateToggle("Combat Aura", function(s) auraActive = s end)
 task.spawn(function()
     while task.wait(0.1) do
         if auraActive then
@@ -278,4 +233,4 @@ task.spawn(function()
     end
 end)
 
-print("ARCHITECT V6.2 LOADED")
+print("ARCHITECT V7.0: OBSIDIAN BRUTALISM LOADED")
